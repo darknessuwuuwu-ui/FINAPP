@@ -763,18 +763,27 @@
 
 <script>
 (function(){
+  // FINAPP guarda sus datos con prefijo propio: no se mezclan con ADMMO aunque estén en el mismo sitio.
+  var LS = (function(){
+    var P = 'finapp:';
+    return {
+      getItem: function(k){ return localStorage.getItem(P + k); },
+      setItem: function(k, v){ return localStorage.setItem(P + k, v); },
+      removeItem: function(k){ return localStorage.removeItem(P + k); }
+    };
+  })();
   var KEY = 'ganancias_dia_v1';
   var all = {};
-  try { all = JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { all = {}; }
+  try { all = JSON.parse(LS.getItem(KEY)) || {}; } catch(e) { all = {}; }
 
   var EKEY = 'gastos_dia_v1';
   var exps = {};
-  try { exps = JSON.parse(localStorage.getItem(EKEY)) || {}; } catch(e) { exps = {}; }
+  try { exps = JSON.parse(LS.getItem(EKEY)) || {}; } catch(e) { exps = {}; }
   function expList(d){ return exps[d] || []; }
   function spentFor(d){ var t = 0; expList(d).forEach(function(x){ t += num(x.money); }); return t; }
   var BKEY = 'dinero_base_v1', baseMoney = 0;
-  try { baseMoney = parseFloat(localStorage.getItem(BKEY)) || 0; } catch(e) { baseMoney = 0; }
-  function saveExp(){ try { localStorage.setItem(EKEY, JSON.stringify(exps)); } catch(e) {} }
+  try { baseMoney = parseFloat(LS.getItem(BKEY)) || 0; } catch(e) { baseMoney = 0; }
+  function saveExp(){ try { LS.setItem(EKEY, JSON.stringify(exps)); } catch(e) {} }
 
   var C_UP = '#34d27b', C_DOWN = '#ff5c6c', C_FLAT = '#dbe7ff';
   var view = 'today';
@@ -828,7 +837,7 @@
 
   function save(){
     all[currentDate] = entries;
-    try { localStorage.setItem(KEY, JSON.stringify(all)); } catch(e) {}
+    try { LS.setItem(KEY, JSON.stringify(all)); } catch(e) {}
   }
 
   /* ---------- Datos por día ---------- */
@@ -928,7 +937,7 @@
   /* ---------- Tipo de gráfica ---------- */
   var CHART_TYPES = {barras:'Barras', flechas:'Flechas', puntos:'Puntos', pastel:'Pastel'};
   var CHKEY = 'tipo_grafica_v1', chartType = 'flechas';
-  try { var savedCt = localStorage.getItem(CHKEY); if(CHART_TYPES[savedCt]) chartType = savedCt; } catch(e) {}
+  try { var savedCt = LS.getItem(CHKEY); if(CHART_TYPES[savedCt]) chartType = savedCt; } catch(e) {}
 
   var PIE_COLORS = ['#ff2d55','#ff9500','#ffe600','#2bff88','#00c3ff','#7a5cff'];
   function pieColor(i){
@@ -1410,7 +1419,7 @@
   var CKEY = 'colores_custom_v1', HEXRE = /^#[0-9a-f]{6}$/i;
   var custom = {bg:'#1b1033', accent:'#ff2d55'};
   try {
-    var cs = JSON.parse(localStorage.getItem(CKEY));
+    var cs = JSON.parse(LS.getItem(CKEY));
     if(cs && HEXRE.test(cs.bg)) custom.bg = cs.bg;
     if(cs && HEXRE.test(cs.accent)) custom.accent = cs.accent;
   } catch(e) {}
@@ -1445,11 +1454,11 @@
     CVARS.forEach(function(k){ if(v[k] != null) st.setProperty(k, v[k]); else st.removeProperty(k); });
   }
   function clearCustomVars(){ CVARS.forEach(function(k){ document.documentElement.style.removeProperty(k); }); }
-  function saveCustom(){ try { localStorage.setItem(CKEY, JSON.stringify(custom)); } catch(e) {} THEME_BG.custom = custom.bg; }
+  function saveCustom(){ try { LS.setItem(CKEY, JSON.stringify(custom)); } catch(e) {} THEME_BG.custom = custom.bg; }
 
   var theme = 'azul';
   try {
-    var stored = localStorage.getItem(THEME_KEY);
+    var stored = LS.getItem(THEME_KEY);
     if(THEME_BG[stored]) theme = stored; else if(stored === 'light') theme = 'blanco'; else if(stored === 'dark') theme = 'azul';
   } catch(e) {}
   function applyTheme(t){
@@ -1475,7 +1484,7 @@
   Array.prototype.forEach.call(document.querySelectorAll('.sw'), function(b){
     b.addEventListener('click', function(){
       applyTheme(b.getAttribute('data-t'));
-      try { localStorage.setItem(THEME_KEY, theme); } catch(e) {}
+      try { LS.setItem(THEME_KEY, theme); } catch(e) {}
       renderChart(buildRows());
     });
   });
@@ -1541,8 +1550,8 @@
 
   /* ---------- Opción rápida ---------- */
   var QKEY = 'rapidas_v1', quickList = [], qEdit = null;
-  try { quickList = JSON.parse(localStorage.getItem(QKEY)) || []; } catch(e) { quickList = []; }
-  function saveQuick(){ try { localStorage.setItem(QKEY, JSON.stringify(quickList)); } catch(e) {} }
+  try { quickList = JSON.parse(LS.getItem(QKEY)) || []; } catch(e) { quickList = []; }
+  function saveQuick(){ try { LS.setItem(QKEY, JSON.stringify(quickList)); } catch(e) {} }
 
   var toastT;
   function toast(msg){
@@ -1636,7 +1645,7 @@
   
   /* ---------- Cuenta y foto de perfil ---------- */
   var PKEY = 'perfil_v1', profile = null, draftPhoto = '';
-  try { profile = JSON.parse(localStorage.getItem(PKEY)) || null; } catch(e) { profile = null; }
+  try { profile = JSON.parse(LS.getItem(PKEY)) || null; } catch(e) { profile = null; }
   var PERSON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>';
 
   function fillAvatar(node, photo, name){
@@ -1700,7 +1709,7 @@
     if(!name){ byId('acName').focus(); toast('Escribe tu nombre'); return; }
     var wasNew = !profile;
     profile = {name: name, photo: draftPhoto};
-    try { localStorage.setItem(PKEY, JSON.stringify(profile)); } catch(e) { toast('No se pudo guardar la foto'); }
+    try { LS.setItem(PKEY, JSON.stringify(profile)); } catch(e) { toast('No se pudo guardar la foto'); }
     renderProfile();
     toast(wasNew ? 'Cuenta creada' : 'Cuenta guardada');
     showPanel('main');
@@ -1708,7 +1717,7 @@
   byId('acDel').addEventListener('click', function(){
     if(!confirm('¿Eliminar tu cuenta y foto de perfil? Tus ganancias y gastos no se borran.')) return;
     profile = null;
-    try { localStorage.removeItem(PKEY); } catch(e) {}
+    try { LS.removeItem(PKEY); } catch(e) {}
     renderProfile();
     showPanel('main');
   });
@@ -1724,7 +1733,7 @@
     var raw = byId('mnAmt').value;
     if(raw === ''){ byId('mnAmt').focus(); return; }
     baseMoney = whole(raw) - netTotal();
-    try { localStorage.setItem(BKEY, String(baseMoney)); } catch(e) {}
+    try { LS.setItem(BKEY, String(baseMoney)); } catch(e) {}
     refreshStats();
     toast('Dinero actualizado');
     showPanel('main');
@@ -1804,20 +1813,20 @@
     if(THEME_BG[d.tema]) theme = d.tema;
     if(CHART_TYPES[d.grafica]){
       chartType = d.grafica;
-      try { localStorage.setItem(CHKEY, chartType); } catch(e) {}
+      try { LS.setItem(CHKEY, chartType); } catch(e) {}
       syncChartUi();
     }
 
     try {
-      localStorage.setItem(KEY, JSON.stringify(all));
-      localStorage.setItem(EKEY, JSON.stringify(exps));
-      localStorage.setItem(QKEY, JSON.stringify(quickList));
+      LS.setItem(KEY, JSON.stringify(all));
+      LS.setItem(EKEY, JSON.stringify(exps));
+      LS.setItem(QKEY, JSON.stringify(quickList));
       
-      localStorage.setItem(BKEY, String(baseMoney));
+      LS.setItem(BKEY, String(baseMoney));
       
-      localStorage.setItem(DKEY, JSON.stringify(debts));
-      localStorage.setItem(THEME_KEY, theme);
-      if(profile) localStorage.setItem(PKEY, JSON.stringify(profile)); else localStorage.removeItem(PKEY);
+      LS.setItem(DKEY, JSON.stringify(debts));
+      LS.setItem(THEME_KEY, theme);
+      if(profile) LS.setItem(PKEY, JSON.stringify(profile)); else LS.removeItem(PKEY);
     } catch(e) { toast('No se pudo guardar todo en el dispositivo'); }
 
     applyTheme(theme);
@@ -1939,9 +1948,9 @@
     editingId = null;
     entries = all[currentDate] || [];
     try {
-      localStorage.setItem(KEY, JSON.stringify(all));
-      localStorage.setItem(EKEY, JSON.stringify(exps));
-      localStorage.setItem(QKEY, JSON.stringify(quickList));
+      LS.setItem(KEY, JSON.stringify(all));
+      LS.setItem(EKEY, JSON.stringify(exps));
+      LS.setItem(QKEY, JSON.stringify(quickList));
       
     } catch(e) {}
     saveDebts();
@@ -1963,7 +1972,7 @@
     custom[k] = v.toLowerCase();
     saveCustom();
     theme = 'custom';
-    try { localStorage.setItem(THEME_KEY, theme); } catch(e) {}
+    try { LS.setItem(THEME_KEY, theme); } catch(e) {}
     applyTheme('custom');
     syncColorUi();
     renderChart(buildRows());
@@ -1982,7 +1991,7 @@
   byId('cuAc').addEventListener('input', function(){ setCustom('accent', this.value); });
   byId('cuReset').addEventListener('click', function(){
     custom = {bg:'#1b1033', accent:'#ff2d55'}; saveCustom();
-    try { localStorage.setItem(THEME_KEY, 'azul'); } catch(e) {}
+    try { LS.setItem(THEME_KEY, 'azul'); } catch(e) {}
     applyTheme('azul'); syncColorUi(); renderChart(buildRows());
     toast('Colores restablecidos');
   });
@@ -2044,7 +2053,7 @@
   function setChartType(t){
     if(!CHART_TYPES[t]) return;
     chartType = t;
-    try { localStorage.setItem(CHKEY, t); } catch(e) {}
+    try { LS.setItem(CHKEY, t); } catch(e) {}
     syncChartUi();
     renderChart(buildRows());
   }
@@ -2101,8 +2110,8 @@
       };
     }).filter(function(d){ return d.amount > 0 && d.person; });
   }
-  try { debts = sanitizeDebts(JSON.parse(localStorage.getItem(DKEY))); } catch(e) { debts = []; }
-  function saveDebts(){ try { localStorage.setItem(DKEY, JSON.stringify(debts)); } catch(e) {} }
+  try { debts = sanitizeDebts(JSON.parse(LS.getItem(DKEY))); } catch(e) { debts = []; }
+  function saveDebts(){ try { LS.setItem(DKEY, JSON.stringify(debts)); } catch(e) {} }
   function paidOf(d){ var t = 0; d.pays.forEach(function(p){ t += p.amount; }); return r2(t); }
   function leftOf(d){ return Math.max(0, r2(d.amount - paidOf(d))); }
   function isPaid(d){ return leftOf(d) <= 0; }
@@ -2313,15 +2322,15 @@
   var TKEY = 'tasas_cfg_v1', RKEY = 'tasas_cache_v1', tcfg = {on: false, token: ''}, rcache = null, rBusy = false, rErr = '';
   var RATE_INFO = [{c: 'USD', n: 'Dólar'}, {c: 'EUR', n: 'Euro'}, {c: 'MLC', n: 'MLC'}];
   try {
-    var _tc = JSON.parse(localStorage.getItem(TKEY));
+    var _tc = JSON.parse(LS.getItem(TKEY));
     if(isObj(_tc)){ tcfg.on = !!_tc.on; tcfg.token = String(_tc.token || '').trim(); }
   } catch(e) {}
   try {
-    var _rc = JSON.parse(localStorage.getItem(RKEY));
+    var _rc = JSON.parse(LS.getItem(RKEY));
     if(isObj(_rc) && isObj(_rc.rates) && num(_rc.at) > 0) rcache = {at: num(_rc.at), rates: _rc.rates};
   } catch(e) {}
-  function saveTcfg(){ try { localStorage.setItem(TKEY, JSON.stringify(tcfg)); } catch(e) {} }
-  function saveRcache(){ try { localStorage.setItem(RKEY, JSON.stringify(rcache)); } catch(e) {} }
+  function saveTcfg(){ try { LS.setItem(TKEY, JSON.stringify(tcfg)); } catch(e) {} }
+  function saveRcache(){ try { LS.setItem(RKEY, JSON.stringify(rcache)); } catch(e) {} }
 
   // Tasas utilizables (CUP por unidad) solo si el modo online está encendido y hay datos guardados.
   function ratesNow(){
