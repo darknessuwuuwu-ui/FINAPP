@@ -541,14 +541,14 @@
 
     <div class="panel" id="pnlMain">
       <button class="set-item" data-go="account" type="button"><span>Cuenta</span><small id="valAccount"></small><b>›</b></button>
-      <button class="set-item" data-go="clan" type="button"><span>Clan</span><small id="valClan"></small><b>›</b></button>
+      
       <button class="set-item" data-go="money" type="button"><span>Dinero que tengo</span><small id="valMoney"></small><b>›</b></button>
       <button class="set-item" data-go="online" type="button"><span>Modo online · tasas</span><small id="valOnline"></small><b>›</b></button>
       <button class="set-item" data-go="theme" type="button"><span>Tema</span><small id="valTheme"></small><b>›</b></button>
       <button class="set-item" data-go="chart" type="button"><span>Tipo de gráfica</span><small id="valChart"></small><b>›</b></button>
       <button class="set-item" data-go="colors" type="button"><span>Editor de colores</span><small id="valCustom"></small><b>›</b></button>
       <button class="set-item" data-go="quick" type="button"><span>Opción rápida</span><small id="valQuick"></small><b>›</b></button>
-      <button class="set-item" data-go="links" type="button"><span>Accesos directos</span><small id="valLinks"></small><b>›</b></button>
+      
     </div>
 
     <div class="panel" id="pnlAccount" hidden>
@@ -567,59 +567,12 @@
 
       <hr class="sep" style="margin:18px 0 14px">
       <div class="set-name">Importar y exportar</div>
-      <div class="sub" style="margin-bottom:6px">Exporta tu cuenta a un archivo que guarda toda la información: ganancias, gastos, dinero que tienes, perfil con foto, opciones rápidas, deudas, accesos directos y tema. También puedes sacar una hoja de <b>Excel</b> con tus ganancias y gastos.</div>
+      <div class="sub" style="margin-bottom:6px">Exporta tu cuenta a un archivo que guarda toda la información: ganancias, gastos, dinero que tienes, perfil con foto, opciones rápidas, deudas y tema. También puedes sacar una hoja de <b>Excel</b> con tus ganancias y gastos.</div>
       <button class="btn-wide pri" id="bkExport" type="button">Exportar cuenta</button>
       <button class="btn-wide sec" id="bkExcel" type="button">Exportar a Excel</button>
       <button class="btn-wide sec" id="bkImport" type="button">Importar cuenta</button>
       <input type="file" id="bkFile" accept=".json,application/json" hidden>
       <div class="sub" style="margin:12px 0 0;font-size:.78rem">Al importar, se reemplaza toda la información actual por la del archivo.</div>
-    </div>
-
-    
-    <div class="panel" id="pnlClan" hidden>
-      <label for="clName">Nombre del clan</label>
-      <input type="text" id="clName" maxlength="30" autocomplete="off" placeholder="Ej. Los Entrenadores">
-      <label for="clTag" style="display:block;margin-top:10px">Iniciales (como en el juego)</label>
-      <input type="text" id="clTag" maxlength="5" autocomplete="off" autocapitalize="characters" placeholder="Ej. ENT">
-      <div class="form-actions">
-        <button class="btn-del" id="clDel" type="button" hidden>Eliminar clan</button>
-        <button class="btn-done" id="clSave" type="button" style="margin-left:auto">Crear clan</button>
-      </div>
-      <div class="cl-sub" id="clMenu" hidden>
-        <button class="set-item" data-go="clPlayers" type="button"><span>Jugadores</span><small id="valClPl"></small><b>›</b></button>
-        <button class="set-item" data-go="clCapital" type="button"><span>Capital</span><small id="valClCap"></small><b>›</b></button>
-        <button class="set-item" data-go="clRoles" type="button"><span>Funciones</span><small id="valClRo"></small><b>›</b></button>
-      </div>
-    </div>
-
-    <div class="panel" id="pnlClPlayers" hidden>
-      <div class="sub" style="margin-bottom:10px">Los jugadores que forman parte de tu clan.</div>
-      <div id="clPList"></div>
-      <input type="text" id="clPName" maxlength="30" autocomplete="off" placeholder="Nombre del jugador">
-      <div class="form-actions" style="justify-content:flex-end"><button class="btn-done" id="clPAdd" type="button">Agregar</button></div>
-    </div>
-
-    <div class="panel" id="pnlClCapital" hidden>
-      <div class="wallet" style="margin-bottom:14px"><div class="label">Capital del clan</div><div class="wallet-amt" id="clCapAmt">$0</div></div>
-      <label for="clAmt">Cantidad</label>
-      <input type="number" id="clAmt" inputmode="numeric" min="0" step="1" placeholder="0">
-      <input type="text" id="clNote" maxlength="60" autocomplete="off" placeholder="Nota (opcional)" style="margin-top:10px">
-      <select class="sel" id="clWho" style="width:100%;max-width:100%;margin-top:10px" aria-label="Jugador"></select>
-      <div class="form-actions" style="gap:10px">
-        <button class="btn-del" id="clRet" type="button">Retirar</button>
-        <button class="btn-done" id="clDep" type="button">Depositar</button>
-      </div>
-      <div class="set-name cl-sub">Movimientos</div>
-      <div id="clLog"></div>
-    </div>
-
-    <div class="panel" id="pnlClRoles" hidden>
-      <div class="set-name">Funciones disponibles</div>
-      <div id="clRList"></div>
-      <input type="text" id="clRName" maxlength="24" autocomplete="off" placeholder="Nueva función (ej. Tesorero)">
-      <div class="form-actions" style="justify-content:flex-end"><button class="btn-done" id="clRAdd" type="button">Agregar</button></div>
-      <div class="set-name cl-sub">Función de cada miembro</div>
-      <div id="clAssign"></div>
     </div>
 
     
@@ -710,19 +663,6 @@
     </div>
 
     
-    <div class="panel" id="pnlLinks" hidden>
-      <div class="sub" style="margin-bottom:10px">Guarda páginas web para abrirlas con un toque.</div>
-      <div id="lList"></div>
-      <div id="lForm">
-        <input type="text" id="lName" placeholder="Nombre (opcional)">
-        <input type="url" id="lUrl" inputmode="url" autocapitalize="off" autocomplete="off" placeholder="https://ejemplo.com" style="margin-top:10px">
-        <div class="form-actions" style="justify-content:flex-end;gap:10px">
-          <button class="btn-del" id="lCancel" type="button" hidden>Cancelar</button>
-          <button class="btn-done" id="lSave" type="button">Agregar</button>
-        </div>
-      </div>
-    </div>
-    
   </div>
 </div>
 
@@ -735,29 +675,17 @@
     </div>
 
     <div class="panel" id="gpMain">
-      <button class="g-item" data-gg="colors" type="button"><span>Colores RGB<em class="gd">Los colores hexadecimales del botón + y del perfil</em></span><b>›</b></button>
+      
       <button class="g-item" data-gg="home" type="button"><span>Inicio y Historial<em class="gd">Cómo registrar ganancias y ver tus días</em></span><b>›</b></button>
       <button class="g-item" data-gg="charts" type="button"><span>Tipos de gráfica<em class="gd">Cómo leer Barras, Flechas, Puntos y Pastel</em></span><b>›</b></button>
       <button class="g-item" data-gg="debts" type="button"><span>Deudas<em class="gd">Lo que te deben y lo que debes</em></span><b>›</b></button>
       <button class="g-item" data-gg="online" type="button"><span>Tasas y modo online<em class="gd">Cambio de la moneda cubana (elTOQUE)</em></span><b>›</b></button>
       <button class="g-item" data-gg="expenses" type="button"><span>Gastos<em class="gd">Anota lo que gastas</em></span><b>›</b></button>
       <button class="g-item" data-gg="money" type="button"><span>Dinero que tengo<em class="gd">Tu saldo, siempre al día</em></span><b>›</b></button>
-      <button class="g-item" data-gg="quick" type="button"><span>Opción rápida y accesos<em class="gd">Atajos para ahorrar toques</em></span><b>›</b></button>
+      <button class="g-item" data-gg="quick" type="button"><span>Opción rápida<em class="gd">Agrega una ganancia con un toque</em></span><b>›</b></button>
       <button class="g-item" data-gg="more" type="button"><span>Buscar, deshacer y Excel<em class="gd">Funciones para ahorrar tiempo</em></span><b>›</b></button>
-      <button class="g-item" data-gg="clan" type="button"><span>Clan<em class="gd">Jugadores, capital y funciones</em></span><b>›</b></button>
+      
       <button class="g-item" data-gg="account" type="button"><span>Cuenta y copia de seguridad<em class="gd">Foto, nombre, importar y exportar</em></span><b>›</b></button>
-    </div>
-
-    
-    <div class="panel" id="gpColors" hidden>
-      <div class="rgb-title" id="rgbTitle" aria-label="Colores hexadecimales RGB"></div>
-      <p class="gp">Estos son los colores <b>hexadecimales</b> del efecto RGB animado. Se usan en el <b>botón +</b>, en el <b>aro de la foto de perfil</b> y en los <b>botones de Cuenta</b>.</p>
-      <div class="rgb-code" id="rgbCode"></div>
-      <div id="hexList"></div>
-      <div class="set-name" style="margin-top:18px">Más colores</div>
-      <p class="gp" style="color:var(--muted);font-size:.8rem">Una lista de colores comunes para inspirarte.</p>
-      <div id="hexMore"></div>
-      <p class="gp" style="color:var(--muted);font-size:.78rem;margin-top:12px">Toca un color para copiar su código.</p>
     </div>
 
     
@@ -799,22 +727,14 @@
 
     <div class="panel" id="gpQuick" hidden>
       <p class="gp"><b>Opción rápida:</b> en Ajustes creas botones que agregan una ganancia al día con un solo toque.</p>
-      <p class="gp"><b>Accesos directos:</b> guarda páginas web en Ajustes para abrirlas con un toque.</p>
+      
     </div>
 
     <div class="panel" id="gpMore" hidden>
       <p class="gp"><b>Buscar en el Historial:</b> escribe una fecha (por ejemplo "oct" o "2026-10-22") o una descripción y solo verás los días que coincidan.</p>
-      <p class="gp"><b>Deshacer:</b> al borrar una ganancia, un gasto, un día, el historial, una opción rápida, un acceso o una deuda, aparece un aviso con el botón <b>Deshacer</b> por unos segundos.</p>
+      <p class="gp"><b>Deshacer:</b> al borrar una ganancia, un gasto, un día, el historial, una opción rápida o una deuda, aparece un aviso con el botón <b>Deshacer</b> por unos segundos.</p>
       <p class="gp"><b>Editor de colores:</b> en Ajustes eliges tu propio color de fondo y de acento.</p>
       <p class="gp"><b>Excel:</b> en Ajustes → Cuenta, el botón <b>Exportar a Excel</b> crea un archivo .xlsx con las hojas Resumen, Ganancias y Gastos.</p>
-    </div>
-
-    
-    <div class="panel" id="gpClan" hidden>
-      <p class="gp">En <b>Ajustes → Clan</b> pones el nombre de tu clan y sus iniciales, como en el juego.</p>
-      <p class="gp"><b>Jugadores:</b> agrega o quita a los miembros.</p>
-      <p class="gp"><b>Capital:</b> lleva el dinero del clan con depósitos y retiros, y un registro de cada movimiento.</p>
-      <p class="gp"><b>Funciones:</b> crea funciones (Líder, Oficial, Tesorero...) y elige cuál tiene cada miembro.</p>
     </div>
 
     
@@ -1713,87 +1633,7 @@
   byId('qCancel').addEventListener('click', qReset);
   renderQuick();
 
-  /* ---------- Accesos directos ---------- */
-  var LKEY = 'accesos_v1', linkList = [], lEdit = null;
-  try { linkList = JSON.parse(localStorage.getItem(LKEY)) || []; } catch(e) { linkList = []; }
-  function saveLinks(){ try { localStorage.setItem(LKEY, JSON.stringify(linkList)); } catch(e) {} }
-
-  function fixUrl(u){
-    u = u.trim();
-    if(!u) return '';
-    if(!/^[a-z][a-z0-9+.-]*:/i.test(u)) u = 'https://' + u;
-    try {
-      var x = new URL(u);
-      return (x.protocol === 'http:' || x.protocol === 'https:') ? x.href : '';
-    } catch(e) { return ''; }
-  }
-  function hostOf(u){ try { return new URL(u).hostname.replace(/^www\./, ''); } catch(e) { return u; } }
-
-  function lReset(){
-    lEdit = null;
-    byId('lName').value = ''; byId('lUrl').value = '';
-    byId('lSave').textContent = 'Agregar';
-    byId('lCancel').hidden = true;
-  }
-
-  function renderLinks(){
-    var list = byId('lList');
-    list.innerHTML = '';
-    byId('valLinks').textContent = linkList.length ? linkList.length : 'Ninguno';
-    if(!linkList.length){
-      var box = document.createElement('div'); box.className = 'empty';
-      box.textContent = 'Aún no tienes accesos directos.';
-      list.appendChild(box);
-      return;
-    }
-    linkList.forEach(function(l){
-      var row = document.createElement('div'); row.className = 'ent';
-      var a = document.createElement('a');
-      a.className = 'ent-main lnk'; a.href = l.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
-      var st = document.createElement('strong'); st.textContent = l.name || hostOf(l.url);
-      var sm = document.createElement('small'); sm.textContent = hostOf(l.url);
-      a.appendChild(st); a.appendChild(sm);
-      var btns = document.createElement('div'); btns.className = 'qbtns';
-      var ed = document.createElement('button'); ed.type = 'button'; ed.className = 'chip'; ed.textContent = 'Editar';
-      ed.addEventListener('click', function(){
-        lEdit = l.id;
-        byId('lName').value = l.name || ''; byId('lUrl').value = l.url;
-        byId('lSave').textContent = 'Guardar';
-        byId('lCancel').hidden = false;
-        byId('lName').focus();
-      });
-      var del = document.createElement('button'); del.type = 'button'; del.className = 'btn-del'; del.textContent = 'Eliminar';
-      del.addEventListener('click', function(){
-        pushUndo('Acceso eliminado');
-        linkList = linkList.filter(function(x){ return x.id !== l.id; });
-        if(lEdit === l.id) lReset();
-        saveLinks(); renderLinks();
-      });
-      btns.appendChild(ed); btns.appendChild(del);
-      row.appendChild(a); row.appendChild(btns);
-      list.appendChild(row);
-    });
-  }
-
-  function saveLink(){
-    var url = fixUrl(byId('lUrl').value);
-    if(!url){ byId('lUrl').focus(); toast('Escribe una dirección web válida'); return; }
-    var name = byId('lName').value.trim();
-    if(lEdit){
-      linkList.forEach(function(x){ if(x.id === lEdit){ x.name = name; x.url = url; } });
-    } else {
-      linkList.push({id: uid(), name: name, url: url});
-    }
-    lReset(); saveLinks(); renderLinks();
-  }
-  byId('lSave').addEventListener('click', saveLink);
-  byId('lCancel').addEventListener('click', lReset);
-  ['lName','lUrl'].forEach(function(id){
-    byId(id).addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); saveLink(); } });
-  });
-  renderLinks();
-
-
+  
   /* ---------- Cuenta y foto de perfil ---------- */
   var PKEY = 'perfil_v1', profile = null, draftPhoto = '';
   try { profile = JSON.parse(localStorage.getItem(PKEY)) || null; } catch(e) { profile = null; }
@@ -1898,8 +1738,8 @@
     return {
       app: 'mis-ganancias', version: 1, exported: new Date().toISOString(),
       data: {
-        ganancias: all, gastos: exps, rapidas: quickList, accesos: linkList, deudas: debts,
-        dinero_base: baseMoney, perfil: profile, tema: theme, colores: custom, clan: clan, grafica: chartType
+        ganancias: all, gastos: exps, rapidas: quickList,  deudas: debts,
+        dinero_base: baseMoney, perfil: profile, tema: theme, colores: custom, grafica: chartType
       }
     };
   }
@@ -1942,12 +1782,7 @@
     Object.keys(nAll).forEach(function(k){ if(!Array.isArray(nAll[k])) delete nAll[k]; });
     Object.keys(nExp).forEach(function(k){ if(!Array.isArray(nExp[k])) delete nExp[k]; });
     var nQuick = Array.isArray(d.rapidas) ? d.rapidas.filter(isObj) : [];
-    var nLinks = [];
-    (Array.isArray(d.accesos) ? d.accesos : []).forEach(function(l){
-      if(!isObj(l)) return;
-      var u = fixUrl(String(l.url || ''));
-      if(u) nLinks.push({id: l.id || uid(), name: String(l.name || ''), url: u});
-    });
+    
     var nDebts = sanitizeDebts(d.deudas);
     var nBase = parseFloat(d.dinero_base); if(isNaN(nBase)) nBase = 0;
     var nProf = null;
@@ -1956,8 +1791,8 @@
       nProf = {name: d.perfil.name.slice(0, 30), photo: ph};
     }
 
-    clan = sanitizeClan(d.clan);
-    all = nAll; exps = nExp; quickList = nQuick; linkList = nLinks; baseMoney = nBase; profile = nProf;
+    
+    all = nAll; exps = nExp; quickList = nQuick; baseMoney = nBase; profile = nProf;
     debts = nDebts; dOpen = null;
     editingId = null;
     entries = all[currentDate] || [];
@@ -1977,16 +1812,16 @@
       localStorage.setItem(KEY, JSON.stringify(all));
       localStorage.setItem(EKEY, JSON.stringify(exps));
       localStorage.setItem(QKEY, JSON.stringify(quickList));
-      localStorage.setItem(LKEY, JSON.stringify(linkList));
+      
       localStorage.setItem(BKEY, String(baseMoney));
-      saveClan();
+      
       localStorage.setItem(DKEY, JSON.stringify(debts));
       localStorage.setItem(THEME_KEY, theme);
       if(profile) localStorage.setItem(PKEY, JSON.stringify(profile)); else localStorage.removeItem(PKEY);
     } catch(e) { toast('No se pudo guardar todo en el dispositivo'); }
 
     applyTheme(theme);
-    renderQuick(); renderLinks(); renderProfile(); renderAll(); renderClan(); loadClanPanel();
+    renderQuick(); renderProfile(); renderAll(); 
   }
 
   /* ---------- Exportar a Excel (.xlsx) ---------- */
@@ -2087,7 +1922,7 @@
   var undoSnap = null, undoT;
   function pushUndo(msg){
     all[currentDate] = entries;
-    undoSnap = JSON.stringify({all: all, exps: exps, quick: quickList, links: linkList, clan: clan, debts: debts});
+    undoSnap = JSON.stringify({all: all, exps: exps, quick: quickList, debts: debts});
     byId('undoMsg').textContent = msg;
     byId('undoBar').hidden = false;
     clearTimeout(undoT);
@@ -2098,7 +1933,7 @@
     if(!undoSnap) return hideUndo();
     var snap;
     try { snap = JSON.parse(undoSnap); } catch(e) { return hideUndo(); }
-    all = snap.all || {}; exps = snap.exps || {}; quickList = snap.quick || []; linkList = snap.links || [];
+    all = snap.all || {}; exps = snap.exps || {}; quickList = snap.quick || []; 
     if(snap.debts) debts = sanitizeDebts(snap.debts);
     dOpen = null;
     editingId = null;
@@ -2107,12 +1942,12 @@
       localStorage.setItem(KEY, JSON.stringify(all));
       localStorage.setItem(EKEY, JSON.stringify(exps));
       localStorage.setItem(QKEY, JSON.stringify(quickList));
-      localStorage.setItem(LKEY, JSON.stringify(linkList));
+      
     } catch(e) {}
     saveDebts();
-    clan = sanitizeClan(snap.clan); saveClan();
+    
     undoSnap = null; hideUndo();
-    renderQuick(); renderLinks(); renderAll(); renderClan(); loadClanPanel();
+    renderQuick(); renderAll(); 
     toast('Restaurado');
   });
 
@@ -2173,84 +2008,15 @@
   });
 
   /* ---------- Guía ---------- */
-  var RGB = [
-    {hex:'#ff2d55', name:'Rosa'}, {hex:'#ff9500', name:'Naranja'}, {hex:'#ffe600', name:'Amarillo'},
-    {hex:'#2bff88', name:'Verde'}, {hex:'#00c3ff', name:'Celeste'}, {hex:'#7a5cff', name:'Violeta'}
-  ];
-  (function buildColors(){
-    var t = byId('rgbTitle'), k = 0;
-    'Colores hexadecimales RGB'.split('').forEach(function(ch){
-      var sp = document.createElement('span');
-      sp.textContent = ch;
-      if(ch !== ' '){ sp.style.color = RGB[k % RGB.length].hex; k++; }
-      t.appendChild(sp);
-    });
-    var code = byId('rgbCode');
-    code.appendChild(document.createTextNode('linear-gradient(90deg, '));
-    RGB.concat([RGB[0]]).forEach(function(c, i){
-      var sp = document.createElement('span');
-      sp.textContent = c.hex; sp.style.color = c.hex;
-      code.appendChild(sp);
-      code.appendChild(document.createTextNode(i < RGB.length ? ', ' : ')'));
-    });
-    var list = byId('hexList');
-    RGB.forEach(function(c){
-      var b = document.createElement('button');
-      b.type = 'button'; b.className = 'hex-row';
-      var dot = document.createElement('i'); dot.style.background = c.hex;
-      var cd = document.createElement('code'); cd.textContent = c.hex; cd.style.color = c.hex;
-      var sm = document.createElement('small'); sm.textContent = c.name;
-      b.appendChild(dot); b.appendChild(cd); b.appendChild(sm);
-      b.addEventListener('click', function(){
-        try { navigator.clipboard.writeText(c.hex).then(function(){ toast('Copiado ' + c.hex); }, function(){ toast(c.hex); }); }
-        catch(e) { toast(c.hex); }
-      });
-      list.appendChild(b);
-    });
-  })();
-
-  var MORE = [
-    {g:'Rojos', c:[['#ff0000','Rojo'],['#dc143c','Carmesí'],['#b22222','Ladrillo'],['#ff4500','Rojo naranja'],['#ff6b6b','Coral claro'],['#8b0000','Vino']]},
-    {g:'Naranjas y amarillos', c:[['#ff7f50','Coral'],['#ffa500','Naranja'],['#ffbf00','Ámbar'],['#ffd700','Oro'],['#ffff00','Amarillo'],['#f0e68c','Caqui']]},
-    {g:'Verdes', c:[['#00ff00','Lima'],['#32cd32','Verde lima'],['#00c853','Esmeralda'],['#228b22','Bosque'],['#7fff00','Chartreuse'],['#00fa9a','Menta'],['#98fb98','Verde pálido'],['#008080','Verde azulado']]},
-    {g:'Azules', c:[['#00ffff','Cian'],['#87ceeb','Cielo'],['#1e90ff','Azul dodger'],['#4169e1','Azul real'],['#0000ff','Azul'],['#000080','Marino']]},
-    {g:'Morados y rosas', c:[['#9b59b6','Amatista'],['#800080','Púrpura'],['#4b0082','Índigo'],['#da70d6','Orquídea'],['#ee82ee','Violeta claro'],['#ff00ff','Magenta'],['#ff1493','Rosa fuerte'],['#ffc0cb','Rosa']]},
-    {g:'Marrones y neutros', c:[['#8b4513','Café'],['#d2691e','Chocolate'],['#deb887','Arena'],['#808080','Gris'],['#c0c0c0','Plata'],['#000000','Negro'],['#ffffff','Blanco']]}
-  ];
-
+  
   function lum(hex){
     var n = parseInt(hex.slice(1), 16), r = n >> 16 & 255, g = n >> 8 & 255, b = n & 255;
     return (0.2126*r + 0.7152*g + 0.0722*b) / 255;
   }
-  (function buildMore(){
-    var box = byId('hexMore');
-    MORE.forEach(function(grp){
-      var h = document.createElement('div'); h.className = 'hex-group'; h.textContent = grp.g;
-      var grid = document.createElement('div'); grid.className = 'hex-grid';
-      grp.c.forEach(function(c){
-        var b = document.createElement('button'); b.type = 'button'; b.className = 'hex-row';
-        var dot = document.createElement('i'); dot.style.background = c[0];
-        var w = document.createElement('div');
-        var cd = document.createElement('code'); cd.textContent = c[0];
-        var l = lum(c[0]);
-        if(l > .2 && l < .85) cd.style.color = c[0];
-        var sm = document.createElement('small'); sm.textContent = c[1];
-        w.appendChild(cd); w.appendChild(sm);
-        b.appendChild(dot); b.appendChild(w);
-        b.addEventListener('click', function(){
-          try { navigator.clipboard.writeText(c[0]).then(function(){ toast('Copiado ' + c[0]); }, function(){ toast(c[0]); }); }
-          catch(e) { toast(c[0]); }
-        });
-        grid.appendChild(b);
-      });
-      box.appendChild(h); box.appendChild(grid);
-    });
-  })();
-
-
+  
   var $guide = byId('guide');
-  var GPANELS = {main:'gpMain', colors:'gpColors', home:'gpHome', charts:'gpCharts', debts:'gpDebts', online:'gpOnline', expenses:'gpExpenses', money:'gpMoney', quick:'gpQuick', more:'gpMore', clan:'gpClan', account:'gpAccount'};
-  var GTITLES = {main:'Guía', colors:'Colores RGB', home:'Inicio y Historial', charts:'Tipos de gráfica', debts:'Deudas', online:'Tasas y modo online', expenses:'Gastos', money:'Dinero que tengo', quick:'Opción rápida y accesos', more:'Buscar, deshacer y Excel', clan:'Clan', account:'Cuenta y copia de seguridad'};
+  var GPANELS = {main:'gpMain', home:'gpHome', charts:'gpCharts', debts:'gpDebts', online:'gpOnline', expenses:'gpExpenses', money:'gpMoney', quick:'gpQuick', more:'gpMore', account:'gpAccount'};
+  var GTITLES = {main:'Guía', home:'Inicio y Historial', charts:'Tipos de gráfica', debts:'Deudas', online:'Tasas y modo online', expenses:'Gastos', money:'Dinero que tengo', quick:'Opción rápida', more:'Buscar, deshacer y Excel', account:'Cuenta y copia de seguridad'};
   function showGuide(name){
     Object.keys(GPANELS).forEach(function(k){ byId(GPANELS[k]).hidden = k !== name; });
     byId('gTitle').textContent = GTITLES[name];
@@ -2267,231 +2033,7 @@
     b.addEventListener('click', function(){ showGuide(b.getAttribute('data-gg')); });
   });
 
-  /* ---------- Clan ---------- */
-  var CLKEY = 'clan_v1', clan = null;
-  function sanitizeClan(c){
-    if(!isObj(c)) return null;
-    var roles = (Array.isArray(c.roles) ? c.roles : []).filter(isObj).map(function(r){
-      return {id: String(r.id || uid()), name: String(r.name || '').slice(0, 24)};
-    }).filter(function(r){ return r.name; });
-    var rid = {}; roles.forEach(function(r){ rid[r.id] = 1; });
-    var players = (Array.isArray(c.players) ? c.players : []).filter(isObj).map(function(pl){
-      return {id: String(pl.id || uid()), name: String(pl.name || '').slice(0, 30), role: rid[pl.role] ? pl.role : ''};
-    }).filter(function(pl){ return pl.name; });
-    var pid = {}; players.forEach(function(pl){ pid[pl.id] = 1; });
-    var log = (Array.isArray(c.log) ? c.log : []).filter(isObj).map(function(m){
-      return {id: String(m.id || uid()), t: m.t === 'ret' ? 'ret' : 'dep', amount: Math.round(num(m.amount)),
-        note: String(m.note || '').slice(0, 60), who: pid[m.who] ? m.who : '', date: String(m.date || '').slice(0, 10)};
-    }).filter(function(m){ return m.amount > 0; });
-    return {name: String(c.name || '').slice(0, 30), tag: String(c.tag || '').toUpperCase().slice(0, 5), roles: roles, players: players, log: log};
-  }
-  try { clan = sanitizeClan(JSON.parse(localStorage.getItem(CLKEY))); } catch(e) { clan = null; }
-  function saveClan(){
-    try { if(clan) localStorage.setItem(CLKEY, JSON.stringify(clan)); else localStorage.removeItem(CLKEY); } catch(e) {}
-  }
-  function clanCapital(){
-    var t = 0;
-    if(clan) clan.log.forEach(function(m){ t += m.t === 'dep' ? m.amount : -m.amount; });
-    return t;
-  }
-  function roleName(id){
-    var n = '';
-    if(clan) clan.roles.forEach(function(r){ if(r.id === id) n = r.name; });
-    return n;
-  }
-  function playerName(id){
-    var n = '';
-    if(clan) clan.players.forEach(function(pl){ if(pl.id === id) n = pl.name; });
-    return n;
-  }
-  function clEmpty(host, text){
-    var b = document.createElement('div'); b.className = 'empty'; b.textContent = text; host.appendChild(b);
-  }
-  function clRow(title, subtitle){
-    var row = document.createElement('div'); row.className = 'ent'; row.style.cursor = 'default';
-    var main = document.createElement('div'); main.className = 'ent-main';
-    var st = document.createElement('strong'); st.textContent = title; main.appendChild(st);
-    if(subtitle){ var sm = document.createElement('small'); sm.textContent = subtitle; main.appendChild(sm); }
-    var right = document.createElement('div'); right.className = 'ent-right';
-    row.appendChild(main); row.appendChild(right);
-    return {row: row, main: main, right: right, title: st};
-  }
-  function clDelBtn(fn){
-    var del = document.createElement('button'); del.type = 'button'; del.className = 'btn-del'; del.textContent = 'Eliminar';
-    del.addEventListener('click', fn);
-    return del;
-  }
-
-  function renderClan(){
-    byId('valClan').textContent = clan ? '[' + clan.tag + '] ' + clan.name : 'Sin crear';
-    byId('clMenu').hidden = !clan;
-    if(!clan){
-      ['clPList','clRList','clAssign','clLog'].forEach(function(id){ byId(id).innerHTML = ''; });
-      byId('clCapAmt').textContent = fmtMoney(0);
-      return;
-    }
-    byId('valClPl').textContent = String(clan.players.length);
-    byId('valClCap').textContent = fmtMoney(clanCapital());
-    byId('valClRo').textContent = String(clan.roles.length);
-
-    // Jugadores
-    var host = byId('clPList'); host.innerHTML = '';
-    if(!clan.players.length) clEmpty(host, 'Aún no hay jugadores.');
-    clan.players.forEach(function(pl){
-      var r = clRow(pl.name, roleName(pl.role) || 'Sin función');
-      r.right.appendChild(clDelBtn(function(){
-        pushUndo('Jugador eliminado');
-        clan.players = clan.players.filter(function(x){ return x.id !== pl.id; });
-        clan.log.forEach(function(m){ if(m.who === pl.id) m.who = ''; });
-        saveClan(); renderClan();
-      }));
-      host.appendChild(r.row);
-    });
-
-    // Funciones
-    host = byId('clRList'); host.innerHTML = '';
-    if(!clan.roles.length) clEmpty(host, 'Aún no hay funciones.');
-    clan.roles.forEach(function(ro){
-      var n = clan.players.filter(function(x){ return x.role === ro.id; }).length;
-      var r = clRow(ro.name, n + plural(n, ' miembro', ' miembros'));
-      r.right.appendChild(clDelBtn(function(){
-        pushUndo('Función eliminada');
-        clan.roles = clan.roles.filter(function(x){ return x.id !== ro.id; });
-        clan.players.forEach(function(x){ if(x.role === ro.id) x.role = ''; });
-        saveClan(); renderClan();
-      }));
-      host.appendChild(r.row);
-    });
-
-    // Asignar función a cada miembro
-    host = byId('clAssign'); host.innerHTML = '';
-    if(!clan.players.length) clEmpty(host, 'Agrega jugadores para asignarles una función.');
-    clan.players.forEach(function(pl){
-      var r = clRow(pl.name);
-      var sel = document.createElement('select'); sel.className = 'sel';
-      sel.setAttribute('aria-label', 'Función de ' + pl.name);
-      var o0 = document.createElement('option'); o0.value = ''; o0.textContent = 'Sin función'; sel.appendChild(o0);
-      clan.roles.forEach(function(ro){
-        var o = document.createElement('option'); o.value = ro.id; o.textContent = ro.name; sel.appendChild(o);
-      });
-      sel.value = pl.role || '';
-      sel.addEventListener('change', function(){
-        pl.role = sel.value; saveClan();
-        byId('valClRo').textContent = String(clan.roles.length);
-        // refrescar textos de las otras listas sin reconstruir este selector
-        renderClanLists();
-      });
-      r.right.appendChild(sel);
-      host.appendChild(r.row);
-    });
-
-    // Capital
-    byId('clCapAmt').textContent = fmtMoney(clanCapital());
-    paint(byId('clCapAmt'), clanCapital());
-    var who = byId('clWho'), keep = who.value;
-    who.innerHTML = '';
-    var w0 = document.createElement('option'); w0.value = ''; w0.textContent = 'Jugador (opcional)'; who.appendChild(w0);
-    clan.players.forEach(function(pl){
-      var o = document.createElement('option'); o.value = pl.id; o.textContent = pl.name; who.appendChild(o);
-    });
-    who.value = playerName(keep) ? keep : '';
-    host = byId('clLog'); host.innerHTML = '';
-    if(!clan.log.length) clEmpty(host, 'Aún no hay movimientos.');
-    clan.log.slice().reverse().slice(0, 40).forEach(function(m){
-      var parts = [];
-      if(m.who && playerName(m.who)) parts.push(playerName(m.who));
-      if(m.note) parts.push(m.note);
-      if(m.date){ var dd = parseDay(m.date); parts.push(dd.toLocaleDateString('es', {day:'numeric', month:'short'}).replace('.', '')); }
-      var r = clRow((m.t === 'dep' ? '+' : '−') + fmtMoney(m.amount), parts.join(' · '));
-      r.title.style.color = m.t === 'dep' ? 'var(--gain)' : 'var(--loss)';
-      r.right.appendChild(clDelBtn(function(){
-        pushUndo('Movimiento eliminado');
-        clan.log = clan.log.filter(function(x){ return x.id !== m.id; });
-        saveClan(); renderClan();
-      }));
-      host.appendChild(r.row);
-    });
-  }
-  // Actualiza solo textos de resumen y de la lista de jugadores/funciones (sin tocar los selectores)
-  function renderClanLists(){
-    var keepAssign = byId('clAssign').innerHTML, scroll = document.querySelector('.sheet').scrollTop;
-    var tmp = byId('clAssign');
-    var kids = Array.prototype.slice.call(tmp.childNodes);
-    renderClan();
-    // restaurar los selectores originales para no perder el foco del que se está usando
-    var fresh = byId('clAssign');
-    fresh.innerHTML = '';
-    kids.forEach(function(k){ fresh.appendChild(k); });
-    document.querySelector('.sheet').scrollTop = scroll;
-  }
-
-  function loadClanPanel(){
-    byId('clName').value = clan ? clan.name : '';
-    byId('clTag').value = clan ? clan.tag : '';
-    byId('clDel').hidden = !clan;
-    byId('clSave').textContent = clan ? 'Guardar cambios' : 'Crear clan';
-    renderClan();
-  }
-  byId('clTag').addEventListener('input', function(){
-    this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-  });
-  byId('clSave').addEventListener('click', function(){
-    var name = byId('clName').value.trim(), tag = byId('clTag').value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    if(!name){ byId('clName').focus(); toast('Escribe el nombre del clan'); return; }
-    if(!tag){ byId('clTag').focus(); toast('Escribe las iniciales'); return; }
-    var isNew = !clan;
-    if(isNew) clan = {name: name, tag: tag, roles: [{id: uid(), name: 'Líder'}, {id: uid(), name: 'Oficial'}, {id: uid(), name: 'Miembro'}], players: [], log: []};
-    else { clan.name = name; clan.tag = tag; }
-    saveClan();
-    byId('clDel').hidden = false; byId('clSave').textContent = 'Guardar cambios';
-    renderClan();
-    toast(isNew ? 'Clan creado' : 'Clan guardado');
-  });
-  byId('clDel').addEventListener('click', function(){
-    if(!confirm('¿Eliminar el clan con sus jugadores, funciones y capital?')) return;
-    pushUndo('Clan eliminado');
-    clan = null; saveClan(); loadClanPanel();
-  });
-
-  function addPlayer(){
-    var n = byId('clPName').value.trim();
-    if(!n || !clan){ byId('clPName').focus(); return; }
-    var member = '';
-    clan.roles.forEach(function(r){ if(r.name.toLowerCase() === 'miembro') member = r.id; });
-    clan.players.push({id: uid(), name: n, role: member});
-    byId('clPName').value = '';
-    saveClan(); renderClan();
-    byId('clPName').focus();
-  }
-  byId('clPAdd').addEventListener('click', addPlayer);
-  byId('clPName').addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); addPlayer(); } });
-
-  function addRole(){
-    var n = byId('clRName').value.trim();
-    if(!n || !clan){ byId('clRName').focus(); return; }
-    clan.roles.push({id: uid(), name: n});
-    byId('clRName').value = '';
-    saveClan(); renderClan();
-    byId('clRName').focus();
-  }
-  byId('clRAdd').addEventListener('click', addRole);
-  byId('clRName').addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); addRole(); } });
-
-  function moveCapital(type){
-    if(!clan) return;
-    var a = whole(byId('clAmt').value);
-    if(a <= 0){ byId('clAmt').focus(); return; }
-    if(type === 'ret' && a > clanCapital()){ toast('No hay suficiente capital'); return; }
-    clan.log.push({id: uid(), t: type, amount: a, note: byId('clNote').value.trim(), who: byId('clWho').value, date: todayStr()});
-    byId('clAmt').value = ''; byId('clNote').value = '';
-    saveClan(); renderClan();
-    toast(type === 'dep' ? 'Depósito agregado' : 'Retiro agregado');
-  }
-  byId('clDep').addEventListener('click', function(){ moveCapital('dep'); });
-  byId('clRet').addEventListener('click', function(){ moveCapital('ret'); });
-  renderClan();
-
-
+  
   /* ---------- Ajuste: tipo de gráfica ---------- */
   function syncChartUi(){
     byId('valChart').textContent = CHART_TYPES[chartType];
@@ -2512,18 +2054,17 @@
   syncChartUi();
 
   /* ---------- Apartados de Ajustes ---------- */
-  var PANELS = {main:'pnlMain', clan:'pnlClan', clPlayers:'pnlClPlayers', clCapital:'pnlClCapital', clRoles:'pnlClRoles', account:'pnlAccount', money:'pnlMoney', colors:'pnlColors', theme:'pnlTheme', chart:'pnlChart', quick:'pnlQuick', links:'pnlLinks', online:'pnlOnline'};
-  var PARENT = {clPlayers:'clan', clCapital:'clan', clRoles:'clan'}, curPanel = 'main';
-  var PTITLES = {main:'Configuración', clan:'Clan', clPlayers:'Jugadores', clCapital:'Capital', clRoles:'Funciones', account:'Cuenta', money:'Dinero que tengo', colors:'Editor de colores', theme:'Tema', chart:'Tipo de gráfica', quick:'Opción rápida', links:'Accesos directos', online:'Modo online'};
+  var PANELS = {main:'pnlMain', account:'pnlAccount', money:'pnlMoney', colors:'pnlColors', theme:'pnlTheme', chart:'pnlChart', quick:'pnlQuick', online:'pnlOnline'};
+  var PARENT = {}, curPanel = 'main';
+  var PTITLES = {main:'Configuración', account:'Cuenta', money:'Dinero que tengo', colors:'Editor de colores', theme:'Tema', chart:'Tipo de gráfica', quick:'Opción rápida', online:'Modo online'};
   function showPanel(name){
     Object.keys(PANELS).forEach(function(k){ byId(PANELS[k]).hidden = k !== name; });
     curPanel = name;
     byId('setTitle').textContent = PTITLES[name];
     byId('setBack').hidden = name === 'main';
-    qReset(); lReset();
+    qReset(); 
     if(name === 'account') loadAccountPanel();
-    if(name === 'clan') loadClanPanel();
-    if(PARENT[name]) renderClan();
+    
     if(name === 'online') loadOnlinePanel();
     if(name === 'colors') syncColorUi();
     if(name === 'chart') syncChartUi();
