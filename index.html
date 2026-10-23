@@ -292,9 +292,24 @@
   .pie-row small{color:var(--muted);font-weight:600;min-width:34px;text-align:right}
   /* ===== Menú de 7 opciones ===== */
   .nav-inner{grid-template-columns:repeat(7,1fr)}
+  .nav-inner.has-orders{grid-template-columns:repeat(8,minmax(0,1fr))}
   .tab{font-size:.62rem;min-width:0;padding:0 1px}
   .tab .ti{width:40px}
-  @media (max-width:340px){.tab{font-size:.56rem}.tab .ti{width:34px}}
+  .nav-inner.has-orders .tab{font-size:.56rem}
+  .nav-inner.has-orders .tab .ti{width:32px}
+  @media (max-width:340px){.tab{font-size:.56rem}.tab .ti{width:34px}.nav-inner.has-orders .tab{font-size:.5rem}.nav-inner.has-orders .tab .ti{width:27px}}
+  /* Interruptor de funciones opcionales */
+  .feature-toggle-row{cursor:default;gap:8px}
+  .feature-toggle-row small{min-width:48px;text-align:right}
+  .switch{position:relative;display:inline-block;width:46px;height:27px;flex:none}
+  .switch input{opacity:0;width:0;height:0;position:absolute}
+  .switch-slider{position:absolute;inset:0;cursor:pointer;background:var(--surface2);border:1px solid var(--line);border-radius:999px;transition:.2s}
+  .switch-slider:before{content:"";position:absolute;width:19px;height:19px;left:3px;top:3px;background:var(--muted);border-radius:50%;transition:.2s}
+  .switch input:checked + .switch-slider{background:var(--blue);border-color:var(--blue)}
+  .switch input:checked + .switch-slider:before{transform:translateX(19px);background:var(--onacc)}
+  .switch input:focus-visible + .switch-slider{outline:2px solid var(--blue-l);outline-offset:2px}
+  .order-meta{font-size:.78rem;color:var(--muted);margin-top:5px;line-height:1.4}
+  .order-card{margin-bottom:10px}
   .chip:disabled{opacity:.5;cursor:default}
 
   /* ===== Deudas ===== */
@@ -470,6 +485,43 @@
     <div id="dList"></div>
   </section>
 
+  <!-- ===== PEDIDOS (función opcional) ===== -->
+  <section id="viewOrders" hidden>
+    <h1>Pedidos</h1>
+    <div class="sub">Registra a quién corresponde cada pedido, qué se pidió, la moneda, el importe total y la cantidad de unidades.</div>
+    <div class="card">
+      <div class="label">Pedidos registrados</div>
+      <div class="day-amt" id="oTotal">0</div>
+      <div class="sub" id="oSummary" style="margin:4px 0 0">Todavía no hay pedidos.</div>
+    </div>
+    <div class="form" id="oForm" hidden>
+      <label for="oPerson">Persona</label>
+      <input type="text" id="oPerson" maxlength="40" autocomplete="off" placeholder="Nombre de la persona">
+      <label for="oItem" style="margin-top:12px">Pedido / producto</label>
+      <input type="text" id="oItem" maxlength="80" autocomplete="off" placeholder="Qué pidió">
+      <div class="grid2">
+        <div>
+          <label for="oAmt">Importe total</label>
+          <input type="number" id="oAmt" inputmode="decimal" min="0" step="any" placeholder="0">
+        </div>
+        <div>
+          <label for="oCur">Moneda</label>
+          <select class="sel" id="oCur" style="width:100%;max-width:100%;padding:12px 10px">
+            <option value="CUP">CUP</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="MLC">MLC</option>
+          </select>
+        </div>
+      </div>
+      <label for="oQty" style="margin-top:12px">Cantidad de unidades</label>
+      <input type="number" id="oQty" inputmode="decimal" min="0.01" step="any" value="1" placeholder="1">
+      <div class="form-actions">
+        <button class="btn-del" id="oCancel" type="button">Cancelar</button>
+        <button class="btn-done" id="oSave" type="button">Guardar pedido</button>
+      </div>
+    </div>
+    <button class="btn-wide sec" id="oNew" type="button" style="margin:0 0 14px">+ Nuevo pedido</button>
+    <div id="oList"></div>
+  </section>
+
   <!-- ===== TASAS ===== -->
   <section id="viewRates" hidden>
     <h1>Tasas de cambio</h1>
@@ -516,6 +568,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
       </button>
     </div>
+    <button class="tab" id="ordersTab" data-view="orders" type="button" hidden>
+      <span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span>
+      Pedidos
+    </button>
     <button class="tab" data-view="debts" type="button">
       <span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h13M16 3l4 4-4 4M17 17H4M8 13l-4 4 4 4"/></svg></span>
       Deudas
@@ -543,6 +599,14 @@
       <button class="set-item" data-go="account" type="button"><span>Cuenta</span><small id="valAccount"></small><b>›</b></button>
       
       <button class="set-item" data-go="money" type="button"><span>Dinero que tengo</span><small id="valMoney"></small><b>›</b></button>
+      <div class="set-item feature-toggle-row">
+        <span>Pedidos</span>
+        <small id="valOrders">Apagado</small>
+        <label class="switch" aria-label="Activar la función Pedidos">
+          <input type="checkbox" id="ordersToggle" aria-label="Activar Pedidos">
+          <span class="switch-slider"></span>
+        </label>
+      </div>
       <button class="set-item" data-go="online" type="button"><span>Modo online · tasas</span><small id="valOnline"></small><b>›</b></button>
       <button class="set-item" data-go="theme" type="button"><span>Tema</span><small id="valTheme"></small><b>›</b></button>
       <button class="set-item" data-go="chart" type="button"><span>Tipo de gráfica</span><small id="valChart"></small><b>›</b></button>
@@ -894,6 +958,7 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
   var $viewToday = byId('viewToday');
   var $viewHist = byId('viewHist');
   var $viewExp = byId('viewExp');
+  var $viewOrders = byId('viewOrders');
   var $list = byId('list');
   var $date = byId('datePicker');
   var $back = byId('backToday');
@@ -1411,11 +1476,13 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
     renderExpenses();
     refreshStats();
     renderDebts();
+    renderOrders();
     renderRates();
   }
 
   /* ---------- Navegación ---------- */
   function showView(name){
+    if(name === 'orders' && !ordersEnabled) name = 'today';
     if(name !== 'today' && editingId != null){
       closeEditing(); save(); renderAll();
     }
@@ -1423,9 +1490,10 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
     $viewToday.hidden = name !== 'today';
     $viewHist.hidden = name !== 'history';
     $viewExp.hidden = name !== 'expenses';
+    $viewOrders.hidden = name !== 'orders';
     byId('viewDebt').hidden = name !== 'debts';
     byId('viewRates').hidden = name !== 'rates';
-    var fabT = name === 'debts' ? 'Nueva deuda' : 'Crear nueva ganancia';
+    var fabT = name === 'debts' ? 'Nueva deuda' : (name === 'orders' ? 'Nuevo pedido' : 'Crear nueva ganancia');
     byId('fab').title = fabT; byId('fab').setAttribute('aria-label', fabT);
     tabs.forEach(function(t){
       t.classList.toggle('active', t.getAttribute('data-view') === name);
@@ -1456,7 +1524,7 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
   tabs.forEach(function(t){
     t.addEventListener('click', function(){ showView(t.getAttribute('data-view')); });
   });
-  byId('fab').addEventListener('click', function(){ if(view === 'debts') openDebtForm(); else addEntry(); });
+  byId('fab').addEventListener('click', function(){ if(view === 'debts') openDebtForm(); else if(view === 'orders') openOrderForm(); else addEntry(); });
   $back.addEventListener('click', function(){ openDay(todayStr()); });
   $date.addEventListener('change', function(){
     if($date.value) openDay($date.value);
@@ -1892,6 +1960,7 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
       app: 'mis-ganancias', version: 1, exported: new Date().toISOString(),
       data: {
         ganancias: all, gastos: exps, rapidas: quickList, accesos: linkList, deudas: debts,
+        pedidos: orders, pedidos_enabled: ordersEnabled,
         dinero_base: baseMoney, perfil: profile, tema: theme, colores: custom, grafica: chartType
       }
     };
@@ -1943,6 +2012,8 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
       if(u) nLinks.push({id: l.id || uid(), name: String(l.name || ''), url: u});
     });
     var nDebts = sanitizeDebts(d.deudas);
+    var nOrders = sanitizeOrders(d.pedidos);
+    var nOrdersEnabled = d.pedidos_enabled === true;
     var nBase = parseFloat(d.dinero_base); if(isNaN(nBase)) nBase = 0;
     var nProf = null;
     if(isObj(d.perfil) && typeof d.perfil.name === 'string'){
@@ -1953,6 +2024,7 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
     
     all = nAll; exps = nExp; quickList = nQuick; linkList = nLinks; baseMoney = nBase; profile = nProf;
     debts = nDebts; dOpen = null;
+    orders = nOrders; ordersEnabled = nOrdersEnabled;
     editingId = null;
     entries = all[currentDate] || [];
     if(isObj(d.colores)){
@@ -1975,11 +2047,14 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
       LS.setItem(BKEY, String(baseMoney));
       
       LS.setItem(DKEY, JSON.stringify(debts));
+      LS.setItem(OKEY, JSON.stringify(orders));
+      LS.setItem(OENKEY, ordersEnabled ? '1' : '0');
       LS.setItem(THEME_KEY, theme);
       if(profile) LS.setItem(PKEY, JSON.stringify(profile)); else LS.removeItem(PKEY);
     } catch(e) { toast('No se pudo guardar todo en el dispositivo'); }
 
     applyTheme(theme);
+    syncOrdersToggle();
     renderQuick(); renderLinks(); renderProfile(); renderAll(); 
   }
 
@@ -2469,6 +2544,117 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
     b.addEventListener('click', function(){ setFormKind(b.getAttribute('data-k')); });
   });
 
+  /* ---------- Pedidos (función opcional) ---------- */
+  var OKEY = 'pedidos_v1', OENKEY = 'pedidos_enabled_v1';
+  var orders = [], ordersEnabled = false, oLastCur = 'CUP';
+  function sanitizeOrders(arr){
+    if(!Array.isArray(arr)) return [];
+    return arr.filter(isObj).map(function(o){
+      var cur = CURS.indexOf(o.cur) >= 0 ? o.cur : 'CUP';
+      return {
+        id: String(o.id || uid()),
+        person: String(o.person || '').slice(0, 40),
+        item: String(o.item || '').slice(0, 80),
+        amount: r2(o.amount),
+        cur: cur,
+        qty: r2(o.qty),
+        date: /^\\d{4}-\\d{2}-\\d{2}$/.test(String(o.date || '')) ? String(o.date) : todayStr()
+      };
+    }).filter(function(o){ return o.person && o.amount > 0 && o.qty > 0; });
+  }
+  try { orders = sanitizeOrders(JSON.parse(LS.getItem(OKEY))); } catch(e) { orders = []; }
+  try { ordersEnabled = LS.getItem(OENKEY) === '1'; } catch(e) { ordersEnabled = false; }
+  function saveOrders(){ try { LS.setItem(OKEY, JSON.stringify(orders)); } catch(e) {} }
+  function syncOrdersToggle(){
+    var toggle = byId('ordersToggle');
+    if(toggle) toggle.checked = !!ordersEnabled;
+    var status = byId('valOrders');
+    if(status) status.textContent = ordersEnabled ? 'Encendido' : 'Apagado';
+    var tab = byId('ordersTab');
+    if(tab) tab.hidden = !ordersEnabled;
+    var nav = document.querySelector('.nav-inner');
+    if(nav) nav.classList.toggle('has-orders', !!ordersEnabled);
+  }
+  function setOrdersEnabled(on){
+    ordersEnabled = !!on;
+    try { LS.setItem(OENKEY, ordersEnabled ? '1' : '0'); } catch(e) {}
+    syncOrdersToggle();
+    if(!ordersEnabled && view === 'orders') showView('today');
+    renderOrders();
+  }
+  byId('ordersToggle').addEventListener('change', function(){ setOrdersEnabled(this.checked); });
+  syncOrdersToggle();
+
+  function openOrderForm(){
+    if(!ordersEnabled) return;
+    byId('oPerson').value = '';
+    byId('oItem').value = '';
+    byId('oAmt').value = '';
+    byId('oCur').value = oLastCur;
+    byId('oQty').value = '1';
+    byId('oForm').hidden = false;
+    byId('oForm').scrollIntoView({behavior:'smooth', block:'center'});
+    byId('oPerson').focus({preventScroll:true});
+  }
+  function closeOrderForm(){ byId('oForm').hidden = true; }
+  function saveOrderForm(){
+    var person = byId('oPerson').value.trim();
+    var item = byId('oItem').value.trim();
+    var amount = r2(byId('oAmt').value);
+    var qty = r2(byId('oQty').value);
+    var cur = byId('oCur').value;
+    if(!person){ byId('oPerson').focus(); toast('Escribe el nombre de la persona'); return; }
+    if(amount <= 0){ byId('oAmt').focus(); toast('Escribe el importe total'); return; }
+    if(qty <= 0){ byId('oQty').focus(); toast('Escribe una cantidad válida'); return; }
+    orders.unshift({id:uid(), person:person, item:item, amount:amount, cur:CURS.indexOf(cur) >= 0 ? cur : 'CUP', qty:qty, date:todayStr()});
+    oLastCur = cur;
+    closeOrderForm();
+    saveOrders(); renderOrders();
+    toast('Pedido guardado');
+  }
+  function renderOrders(){
+    var list = byId('oList');
+    if(!list) return;
+    list.innerHTML = '';
+    byId('oTotal').textContent = String(orders.length);
+    var sums = {};
+    orders.forEach(function(o){ sums[o.cur] = r2((sums[o.cur] || 0) + o.amount); });
+    var sumText = CURS.filter(function(c){ return sums[c] > 0; }).map(function(c){ return fmtAmt(sums[c], c); }).join(' · ');
+    byId('oSummary').textContent = orders.length ? ('Importe registrado: ' + (sumText || '0')) : 'Todavía no hay pedidos.';
+    if(!orders.length){
+      var empty = mk('div','empty');
+      empty.textContent = 'Todavía no hay pedidos. Toca «+ Nuevo pedido» para registrar uno.';
+      list.appendChild(empty);
+      return;
+    }
+    orders.forEach(function(o){
+      var card = mk('div','form order-card');
+      var head = mk('div','dhead');
+      head.appendChild(mk('strong','',o.person));
+      head.appendChild(mk('span','ent-amt',fmtAmt(o.amount,o.cur)));
+      card.appendChild(head);
+      if(o.item) card.appendChild(mk('div','order-meta','Pedido: ' + o.item));
+      card.appendChild(mk('div','order-meta','Cantidad: ' + fmtNum(o.qty) + ' · Registrado: ' + shortDay(o.date)));
+      var actions = mk('div','form-actions');
+      var del = mk('button','btn-del','Eliminar'); del.type = 'button';
+      del.addEventListener('click', function(){
+        if(!confirm('¿Eliminar este pedido de ' + o.person + '?')) return;
+        orders = orders.filter(function(x){ return x.id !== o.id; });
+        saveOrders(); renderOrders(); toast('Pedido eliminado');
+      });
+      actions.appendChild(del); card.appendChild(actions);
+      list.appendChild(card);
+    });
+  }
+  byId('oNew').addEventListener('click', openOrderForm);
+  byId('oSave').addEventListener('click', saveOrderForm);
+  byId('oCancel').addEventListener('click', closeOrderForm);
+  ['oPerson','oItem','oAmt','oQty'].forEach(function(id){
+    byId(id).addEventListener('keydown', function(ev){
+      if(ev.key === 'Enter'){ ev.preventDefault(); saveOrderForm(); }
+    });
+  });
+
   /* ---------- Modo online: tasas de cambio (elTOQUE) ---------- */
   var TKEY = 'tasas_cfg_v1', RKEY = 'tasas_cache_v1', tcfg = {on: false, token: ''}, rcache = null, rBusy = false, rErr = '';
   var RATE_INFO = [{c: 'USD', n: 'Dólar'}, {c: 'EUR', n: 'Euro'}, {c: 'MLC', n: 'MLC'}];
@@ -2794,8 +2980,7 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
   (function(){ byId('valCloud').textContent = sb.auth ? 'Conectado' : (sbReady() ? 'Sin sesión' : 'Sin configurar'); })();
 
   /* ---------- Deslizar para cambiar de opción ---------- */
-  var ORDER = ['today', 'history', 'expenses', 'debts', 'rates'];
-  var SECS = {today: $viewToday, history: $viewHist, expenses: $viewExp, debts: byId('viewDebt'), rates: byId('viewRates')};
+  var SECS = {today: $viewToday, history: $viewHist, expenses: $viewExp, orders: $viewOrders, debts: byId('viewDebt'), rates: byId('viewRates')};
   var sx = 0, sy = 0, st0 = 0, swipe = false;
   document.addEventListener('touchstart', function(e){
     var t = e.touches[0];
@@ -2807,10 +2992,13 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
     swipe = false;
     var t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
     if(Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5 || Date.now() - st0 > 700) return;
-    var i = ORDER.indexOf(view) + (dx < 0 ? 1 : -1);
-    if(i < 0 || i >= ORDER.length) return;
-    showView(ORDER[i]);
-    var el = SECS[ORDER[i]];
+    var order = ['today', 'history', 'expenses'];
+    if(ordersEnabled) order.push('orders');
+    order.push('debts', 'rates');
+    var i = order.indexOf(view) + (dx < 0 ? 1 : -1);
+    if(i < 0 || i >= order.length) return;
+    showView(order[i]);
+    var el = SECS[order[i]];
     el.classList.remove('sl', 'sr'); void el.offsetWidth;
     el.classList.add(dx < 0 ? 'sl' : 'sr');
   }, {passive: true});
