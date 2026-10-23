@@ -2545,7 +2545,11 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
         else if(m === 'empty') rErr = 'elTOQUE no devolvió tasas en este momento.';
         else if(m === 'http' || m === 'shape') rErr = 'elTOQUE respondió con un error. Intenta más tarde.';
         else if(err && err.name === 'AbortError') rErr = 'elTOQUE tardó demasiado en responder.';
-        else rErr = 'No se pudo conectar con elTOQUE. Revisa tu internet (el navegador también puede haber bloqueado la consulta).';
+        else if (window.location && window.location.protocol === 'file:') {
+          rErr = 'Chrome puede bloquear la consulta porque FINAPP está abierta como archivo local. El token por sí solo no lo soluciona: abre FINAPP desde una dirección HTTPS autorizada por elTOQUE, o usa un pequeño servidor intermedio seguro.';
+        } else {
+          rErr = 'No se pudo conectar con elTOQUE. Puede ser un bloqueo CORS del navegador, un origen no autorizado, un problema de internet o del servicio. Comprueba que el dominio de FINAPP esté autorizado para este token.';
+        }
       })
       .then(function(){
         clearTimeout(timer);
