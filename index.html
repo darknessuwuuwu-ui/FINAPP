@@ -220,6 +220,11 @@
   /* Dinero que tengo */
   .wallet{background:var(--surface);border-radius:18px;padding:16px 14px;text-align:center;margin-bottom:16px;box-shadow:var(--shadow)}
   .wallet-amt{font-size:2.2rem;font-weight:800;letter-spacing:-.02em;margin:2px 0 0;word-break:break-word}
+  .wallet-split{display:grid;grid-template-columns:1fr 1fr;margin-top:8px}
+  .wallet-half{min-width:0;padding:0 6px}
+  .wallet-half + .wallet-half{border-left:1px solid var(--line)}
+  .wallet-cur{font-size:.72rem;font-weight:700;letter-spacing:.1em;color:var(--muted)}
+  .wallet-split .wallet-amt{font-size:1.6rem}
   /* RGB animado: perfil y botón de agregar */
   :root{--rgb:linear-gradient(90deg,#ff2d55,#ff9500,#ffe600,#2bff88,#00c3ff,#7a5cff,#ff2d55)}
   @keyframes rgbbtn{from{background-position:0 0}to{background-position:200% 0}}
@@ -347,7 +352,16 @@
 
   <div class="wallet">
     <div class="label">Dinero que tengo</div>
-    <div class="wallet-amt" id="walletMoney">$0</div>
+    <div class="wallet-split">
+      <div class="wallet-half">
+        <div class="wallet-cur">CUP</div>
+        <div class="wallet-amt" id="walletMoney">$0</div>
+      </div>
+      <div class="wallet-half">
+        <div class="wallet-cur">USD</div>
+        <div class="wallet-amt" id="walletUsd">$0</div>
+      </div>
+    </div>
   </div>
 
   <div class="top">
@@ -361,6 +375,7 @@
     <div class="grand">
       <div class="label">Total ganado</div>
       <div class="grand-amt" id="grandMoney">$0</div>
+      <div class="day-exp gain" id="grandUsd" hidden style="font-size:1.1rem;font-weight:800"></div>
       <div class="grand-sub" id="grandSub"></div>
     </div>
 
@@ -393,6 +408,7 @@
       <div>
         <div class="label">Total del día</div>
         <div class="day-amt" id="dayMoney">$0</div>
+        <div class="day-exp gain" id="dayUsd" hidden style="font-size:1rem;font-weight:800"></div>
       </div>
       <div class="day-right">
         <div class="day-items" id="dayItems">0 objetos</div>
@@ -429,13 +445,15 @@
     <div class="card">
       <div class="label">Gastado en el día</div>
       <div class="day-amt" id="expTotal">$0</div>
+      <div class="day-exp" id="expTotalUsd" hidden></div>
     </div>
     <div class="form">
       <input type="text" id="expName" placeholder="Descripción (opcional)">
       <div class="grid2" style="align-items:end">
         <div>
-          <label for="expAmt">Gastado ($)</label>
-          <input type="number" id="expAmt" inputmode="numeric" min="0" step="1" placeholder="0">
+          <label for="expAmt">Gastado</label>
+          <input type="number" id="expAmt" inputmode="decimal" min="0" step="any" placeholder="0">
+          <select class="sel" id="expCur" aria-label="Moneda" style="width:100%;max-width:100%;padding:12px 10px;margin-top:8px"><option value="CUP">CUP</option><option value="USD">USD</option></select>
         </div>
         <button class="btn-done" id="expAdd" type="button">Agregar</button>
       </div>
@@ -446,7 +464,7 @@
   <!-- ===== DEUDAS ===== -->
   <section id="viewDebt" hidden>
     <h1>Deudas</h1>
-    <div class="sub">Anota lo que te deben y lo que debes. No cambian tu dinero hasta que tú lo registres.</div>
+    <div class="sub">Anota lo que te deben y lo que debes (en CUP o USD). Al anotar una deuda que te deben, ese dinero sale de lo que tienes; cuando toques «Me pagaron», vuelve a sumarse. Lo que debes no suma nada: solo se descuenta lo que vayas pagando.</div>
     <div class="debt-sum">
       <div class="card ds"><div class="label">Me deben</div><div class="ds-amt gain" id="dOwedAmt">0</div><div class="ds-eq" id="dOwedEq" hidden></div></div>
       <div class="card ds"><div class="label">Debo</div><div class="ds-amt loss" id="dOweAmt">0</div><div class="ds-eq" id="dOweEq" hidden></div></div>
@@ -470,7 +488,7 @@
         <div>
           <label for="dCur">Moneda</label>
           <select class="sel" id="dCur" style="width:100%;max-width:100%;padding:12px 10px">
-            <option value="CUP">CUP</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="MLC">MLC</option>
+            <option value="CUP">CUP</option><option value="USD">USD</option>
           </select>
         </div>
       </div>
@@ -507,7 +525,7 @@
         <div>
           <label for="oCur">Moneda</label>
           <select class="sel" id="oCur" style="width:100%;max-width:100%;padding:12px 10px">
-            <option value="CUP">CUP</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="MLC">MLC</option>
+            <option value="CUP">CUP</option><option value="USD">USD</option>
           </select>
         </div>
       </div>
@@ -655,9 +673,11 @@
     </div>
 
     <div class="panel" id="pnlMoney" hidden>
-      <div class="sub" style="margin-bottom:12px">Escribe cuánto dinero tienes ahora. Desde ahí se actualiza solo: suma tus ganancias y resta tus gastos.</div>
-      <label for="mnAmt">Dinero que tengo ($)</label>
+      <div class="sub" style="margin-bottom:12px">Escribe cuánto dinero tienes ahora en cada moneda. El CUP se actualiza solo: suma tus ganancias y resta tus gastos. El USD es un saldo aparte que tú ajustas.</div>
+      <label for="mnAmt">Dinero que tengo en CUP ($)</label>
       <input type="number" id="mnAmt" inputmode="numeric" step="1" placeholder="0">
+      <label for="mnUsd" style="margin-top:12px">Dinero que tengo en USD ($)</label>
+      <input type="number" id="mnUsd" inputmode="decimal" step="any" placeholder="0">
       <div class="form-actions" style="justify-content:flex-end">
         <button class="btn-done" id="mnSave" type="button">Guardar</button>
       </div>
@@ -775,8 +795,9 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
       <input type="text" id="qName" placeholder="Descripción (opcional)">
       <div class="grid2">
         <div>
-          <label for="qMoney">Recaudado ($)</label>
-          <input type="number" id="qMoney" inputmode="numeric" min="0" step="1" placeholder="0">
+          <label for="qMoney">Recaudado</label>
+          <input type="number" id="qMoney" inputmode="decimal" min="0" step="any" placeholder="0">
+          <select class="sel" id="qCur" aria-label="Moneda" style="width:100%;max-width:100%;padding:12px 10px;margin-top:8px"><option value="CUP">CUP</option><option value="USD">USD</option></select>
         </div>
         <div>
           <label for="qItems">Cantidad vendida</label>
@@ -849,8 +870,8 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
     </div>
 
     <div class="panel" id="gpMoney" hidden>
-      <p class="gp">Se ve arriba de todo, sobre "FINAPP". Para cambiarlo ve a <b>Ajustes → Dinero que tengo</b> y escribe cuánto tienes ahora.</p>
-      <p class="gp">Desde ahí se actualiza solo: suma tus ganancias y resta tus gastos.</p>
+      <p class="gp">Se ve arriba de todo, sobre "FINAPP", dividido en dos mitades: <b>CUP</b> y <b>USD</b>. Para cambiarlo ve a <b>Ajustes → Dinero que tengo</b> y escribe cuánto tienes en cada moneda.</p>
+      <p class="gp">Desde ahí se actualiza solo: suma tus ganancias y resta tus gastos y deudas de cada moneda. En ganancias, gastos y opciones rápidas eliges si son CUP o USD.</p>
     </div>
 
     <div class="panel" id="gpQuick" hidden>
@@ -870,7 +891,7 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
       <p class="gp">En la pestaña <b>Deudas</b> eliges <b>Me deben</b> (lo que otros te deben a ti) o <b>Debo</b> (lo que tú debes). Toca <b>+ Nueva deuda</b> —o el botón <b>+</b> de abajo mientras estás en Deudas— y escribe la persona, el monto y la moneda (CUP, USD, EUR o MLC).</p>
       <p class="gp"><b>Abonos:</b> toca una deuda para abrirla. Escribe un abono y toca <b>Abonar</b>, o usa <b>Pagar todo</b>. Cuando el saldo llega a cero pasa a <b>Pagadas</b>.</p>
       <p class="gp"><b>Fecha límite:</b> es opcional. Si pasa y la deuda sigue pendiente, aparece marcada como <b>Vencida</b>.</p>
-      <p class="gp">Las deudas <b>no cambian</b> tu \"Dinero que tengo\". Si pagas o cobras de verdad, anótalo en Gastos o en Inicio. Con el modo online encendido, los totales muestran además su equivalente aproximado en CUP.</p>
+      <p class="gp">Las deudas nuevas <b>sí mueven</b> tu \"Dinero que tengo\", en la moneda de la deuda (CUP o USD). <b>Me deben:</b> al anotarla se descuenta de tu dinero, y cada vez que toques <b>Me pagaron</b> se suma de nuevo. <b>Debo:</b> al anotarla no cambia tu dinero; cada abono o pago que hagas se descuenta. Las deudas anotadas antes de esta versión no cambian tu dinero.</p>
     </div>
 
     <div class="panel" id="gpOnline" hidden>
@@ -908,9 +929,18 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
   var exps = {};
   try { exps = JSON.parse(LS.getItem(EKEY)) || {}; } catch(e) { exps = {}; }
   function expList(d){ return exps[d] || []; }
-  function spentFor(d){ var t = 0; expList(d).forEach(function(x){ t += num(x.money); }); return t; }
+  // Moneda de un registro: solo CUP o USD (lo antiguo, sin moneda, es CUP).
+  function curOf(x){ return x && x.cur === 'USD' ? 'USD' : 'CUP'; }
+  function spentFor(d){ var t = 0; expList(d).forEach(function(x){ if(curOf(x) === 'CUP') t += num(x.money); }); return t; }
+  function spentUsdFor(d){ var t = 0; expList(d).forEach(function(x){ if(curOf(x) === 'USD') t += num(x.money); }); return t; }
   var BKEY = 'dinero_base_v1', baseMoney = 0;
   try { baseMoney = parseFloat(LS.getItem(BKEY)) || 0; } catch(e) { baseMoney = 0; }
+  var UKEY = 'dinero_usd_v1', usdMoney = 0;
+  try { usdMoney = parseFloat(LS.getItem(UKEY)) || 0; } catch(e) { usdMoney = 0; }
+  function fmtUsd(n){
+    var r = Math.round(n * 100) / 100;
+    return (r < 0 ? '−' : '') + '$' + Math.abs(r).toLocaleString('es', {maximumFractionDigits: 2});
+  }
   function saveExp(){ try { LS.setItem(EKEY, JSON.stringify(exps)); } catch(e) {} }
 
   var C_UP = '#34d27b', C_DOWN = '#ff5c6c', C_FLAT = '#dbe7ff';
@@ -973,9 +1003,12 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
   function listFor(d){ return d === currentDate ? entries : (all[d] || []); }
 
   function totalsFor(d){
-    var m = 0, it = 0, sp = spentFor(d);
-    listFor(d).forEach(function(e){ m += num(e.money); it += num(e.items); });
-    return {money: m - sp, items: it, spent: sp};
+    var m = 0, u = 0, it = 0, sp = spentFor(d), spu = spentUsdFor(d);
+    listFor(d).forEach(function(e){
+      if(curOf(e) === 'USD') u += num(e.money); else m += num(e.money);
+      it += num(e.items);
+    });
+    return {money: m - sp, usd: u - spu, items: it, spent: sp, spentUsd: spu};
   }
 
   // Una ganancia en blanco (recién creada, sin datos) no cuenta como día registrado.
@@ -990,7 +1023,7 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
     Object.keys(all).forEach(function(d){
       if(d !== currentDate && dataCount(all[d]) > 0) set[d] = 1;
     });
-    Object.keys(exps).forEach(function(d){ if(spentFor(d) > 0) set[d] = 1; });
+    Object.keys(exps).forEach(function(d){ if(spentFor(d) > 0 || spentUsdFor(d) > 0) set[d] = 1; });
     if(dataCount(entries) > 0) set[currentDate] = 1;
     return Object.keys(set).sort();
   }
@@ -1010,7 +1043,7 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
       var t = totalsFor(d);
       var prev = i > 0 ? totalsFor(days[i-1]) : null;
       return {
-        date: d, money: t.money, items: t.items, spent: t.spent, count: dataCount(listFor(d)),
+        date: d, money: t.money, usd: t.usd, items: t.items, spent: t.spent, spentUsd: t.spentUsd, count: dataCount(listFor(d)),
         tm: trend(t.money, prev ? prev.money : null, fmtMoney)
       };
     });
@@ -1032,20 +1065,50 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
     var before = recordedDays().filter(function(d){ return d < currentDate; });
     var prev = before.length ? totalsFor(before[before.length-1]) : null;
     var de = byId('dayExp');
-    de.hidden = !(t.spent > 0);
-    de.textContent = 'Gastos −' + fmtMoney(t.spent);
+    de.hidden = !(t.spent > 0 || t.spentUsd > 0);
+    de.textContent = 'Gastos −' + [t.spent > 0 ? fmtMoney(t.spent) + ' CUP' : '', t.spentUsd > 0 ? fmtUsd(t.spentUsd) + ' USD' : ''].filter(Boolean).join(' · ');
+    var du = byId('dayUsd');
+    du.hidden = Math.round(t.usd * 100) === 0;
+    du.textContent = fmtUsd(t.usd) + ' USD';
+    du.classList.toggle('gain', t.usd > 0); du.classList.toggle('loss', t.usd < 0);
     setPill(byId('dayTrend'), trend(t.money, prev ? prev.money : null, fmtMoney), 'vs anterior', dataCount(entries) > 0 || t.spent > 0);
   }
+
+  // Cuánto mueven las deudas (creadas con esta versión) en el dinero de cada moneda.
+  // Me deben: al anotarla sale el dinero y al cobrar vuelve. Debo: al anotarla no cambia nada; solo los pagos descuentan.
+  function debtAdj(cur){
+    var t = 0;
+    (typeof debts !== 'undefined' ? debts : []).forEach(function(d){
+      if(!d.fx || d.cur !== cur) return;
+      var paid = paidOf(d);
+      t += d.kind === 'owed' ? (paid - d.amount) : -paid;
+    });
+    return r2(t);
+  }
+  function usdNet(rows){
+    var u = 0;
+    (rows || buildRows()).forEach(function(r){ u += r.usd; });
+    return u;
+  }
+  function walletCup(m){ return baseMoney + m + debtAdj('CUP'); }
+  function walletUsd(rows){ return r2(usdMoney + usdNet(rows) + debtAdj('USD')); }
 
   function renderGrand(rows){
     var m = 0, it = 0, sp = 0;
     rows.forEach(function(r){ m += r.money; it += r.items; sp += r.spent; });
     byId('grandMoney').textContent = fmtMoney(m);
     paint(byId('grandMoney'), m);
-    var bal = baseMoney + m, wm = byId('walletMoney');
+    var bal = walletCup(m), wm = byId('walletMoney');
     wm.textContent = fmtMoney(bal);
     paint(wm, bal);
-    byId('valMoney').textContent = fmtMoney(bal);
+    var usd = walletUsd(rows), wu = byId('walletUsd');
+    wu.textContent = fmtUsd(usd);
+    paint(wu, usd);
+    byId('valMoney').textContent = fmtMoney(bal) + ' · ' + fmtUsd(usd) + ' USD';
+    var gu = usdNet(rows), gue = byId('grandUsd');
+    gue.hidden = Math.round(gu * 100) === 0;
+    gue.textContent = fmtUsd(gu) + ' USD';
+    gue.classList.toggle('gain', gu > 0); gue.classList.toggle('loss', gu < 0);
     byId('grandSub').textContent = 'Cantidad vendida: ' + fmtNum(it) +
       ' · ' + rows.length + plural(rows.length, ' día', ' días') + (sp > 0 ? ' · gastos ' + fmtMoney(sp) : '');
   }
@@ -1371,7 +1434,9 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
     sm.textContent = fmtNum(num(e.items)) + plural(num(e.items), ' objeto', ' objetos');
     main.appendChild(st); main.appendChild(sm);
     var right = document.createElement('div'); right.className = 'ent-right';
-    var amt = document.createElement('span'); amt.className = 'ent-amt'; amt.textContent = fmtMoney(num(e.money)); paint(amt, num(e.money));
+    var amt = document.createElement('span'); amt.className = 'ent-amt';
+    amt.textContent = curOf(e) === 'USD' ? fmtUsd(num(e.money)) + ' USD' : fmtMoney(num(e.money));
+    paint(amt, num(e.money));
     right.appendChild(amt);
     b.appendChild(main); b.appendChild(right);
     b.addEventListener('click', function(){ startEditing(e.id); });
@@ -1394,16 +1459,21 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
     var grid = document.createElement('div'); grid.className = 'grid2';
 
     var g1 = document.createElement('div');
-    var l1 = document.createElement('label'); l1.textContent = 'Recaudado ($)';
-    var i1 = document.createElement('input'); i1.type = 'number'; i1.inputMode = 'numeric';
-    i1.min = '0'; i1.step = '1'; i1.placeholder = '0';
+    var l1 = document.createElement('label'); l1.textContent = 'Recaudado';
+    var i1 = document.createElement('input'); i1.type = 'number'; i1.inputMode = 'decimal';
+    i1.min = '0'; i1.step = 'any'; i1.placeholder = '0';
     i1.value = (e.money === '' || e.money == null) ? '' : e.money;
     i1.addEventListener('input', function(){
-      e.money = i1.value === '' ? '' : whole(i1.value);
+      e.money = i1.value === '' ? '' : r2(i1.value);
       save(); refreshStats();
     });
     i1.addEventListener('keydown', onEnter);
-    g1.appendChild(l1); g1.appendChild(i1);
+    var s1 = document.createElement('select'); s1.className = 'sel'; s1.setAttribute('aria-label', 'Moneda');
+    s1.style.cssText = 'width:100%;max-width:100%;padding:12px 10px;margin-top:8px';
+    ['CUP', 'USD'].forEach(function(c){ var o = document.createElement('option'); o.value = c; o.textContent = c; s1.appendChild(o); });
+    s1.value = curOf(e);
+    s1.addEventListener('change', function(){ e.cur = s1.value; save(); refreshStats(); });
+    g1.appendChild(l1); g1.appendChild(i1); g1.appendChild(s1);
 
     var g2 = document.createElement('div');
     var l2 = document.createElement('label'); l2.textContent = 'Cantidad vendida';
@@ -1634,8 +1704,11 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
   function renderExpenses(){
     var l = expList(currentDate), host = byId('expList');
     host.innerHTML = '';
-    byId('expTotal').textContent = fmtMoney(spentFor(currentDate));
+    byId('expTotal').textContent = fmtMoney(spentFor(currentDate)) + ' CUP';
     byId('expTotal').classList.toggle('loss', spentFor(currentDate) > 0);
+    var eu = byId('expTotalUsd'), su = spentUsdFor(currentDate);
+    eu.hidden = !(su > 0);
+    eu.textContent = fmtUsd(su) + ' USD';
     if(!l.length){
       var box = document.createElement('div'); box.className = 'empty';
       box.textContent = 'Aún no hay gastos en este día.';
@@ -1652,7 +1725,7 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
       main.appendChild(st);
       var right = document.createElement('div'); right.className = 'ent-right';
       var amt = document.createElement('span'); amt.className = 'ent-amt loss';
-      amt.textContent = '−' + fmtMoney(num(x.money));
+      amt.textContent = '−' + (curOf(x) === 'USD' ? fmtUsd(num(x.money)) + ' USD' : fmtMoney(num(x.money)));
       var del = document.createElement('button'); del.type = 'button'; del.className = 'btn-del'; del.textContent = 'Eliminar';
       del.addEventListener('click', function(){
         pushUndo('Gasto eliminado');
@@ -1666,10 +1739,10 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
   }
 
   function addExpense(){
-    var a = whole(byId('expAmt').value);
+    var a = r2(byId('expAmt').value);
     if(a <= 0){ byId('expAmt').focus(); return; }
     if(!exps[currentDate]) exps[currentDate] = [];
-    exps[currentDate].push({id: uid(), name: byId('expName').value.trim(), money: a});
+    exps[currentDate].push({id: uid(), name: byId('expName').value.trim(), money: a, cur: byId('expCur').value === 'USD' ? 'USD' : 'CUP'});
     byId('expName').value = ''; byId('expAmt').value = '';
     saveExp(); renderAll();
     byId('expAmt').focus();
@@ -1695,7 +1768,7 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
 
   function addQuick(q){
     closeEditing();
-    entries.push({id: uid(), name: q.name || '', money: q.money, items: q.items});
+    entries.push({id: uid(), name: q.name || '', money: q.money, items: q.items, cur: curOf(q)});
     save(); renderAll();
     var tg = parseTag(q.name);
     toast('Agregado' + (tg.text ? ': ' + tg.text : ''));
@@ -1703,7 +1776,7 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
 
   function qReset(){
     qEdit = null;
-    byId('qName').value = ''; byId('qMoney').value = ''; byId('qItems').value = '';
+    byId('qName').value = ''; byId('qMoney').value = ''; byId('qItems').value = ''; byId('qCur').value = 'CUP';
     byId('qSave').textContent = 'Agregar';
     byId('qCancel').hidden = true;
   }
@@ -1716,7 +1789,7 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
     quickList.forEach(function(q, i){
       var tg = parseTag(q.name);
       var label = tg.text || ('Rápida ' + (i + 1));
-      var amt = (q.money === '' || q.money == null) ? '' : fmtMoney(num(q.money));
+      var amt = (q.money === '' || q.money == null) ? '' : (curOf(q) === 'USD' ? fmtUsd(num(q.money)) + ' USD' : fmtMoney(num(q.money)));
       var qty = (q.items === '' || q.items == null) ? '' : fmtNum(num(q.items));
 
       var b = document.createElement('button');
@@ -1742,6 +1815,7 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
         byId('qName').value = q.name || '';
         byId('qMoney').value = (q.money === '' || q.money == null) ? '' : q.money;
         byId('qItems').value = (q.items === '' || q.items == null) ? '' : q.items;
+        byId('qCur').value = curOf(q);
         byId('qSave').textContent = 'Guardar';
         byId('qCancel').hidden = false;
         byId('qName').focus();
@@ -1763,9 +1837,9 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
     var name = byId('qName').value.trim();
     var mv = byId('qMoney').value, iv = byId('qItems').value;
     if(!name && num(mv) <= 0){ byId('qMoney').focus(); return; }
-    var data = {name: name, money: mv === '' ? '' : whole(mv), items: iv === '' ? '' : num(iv)};
+    var data = {name: name, money: mv === '' ? '' : r2(mv), items: iv === '' ? '' : num(iv), cur: byId('qCur').value === 'USD' ? 'USD' : 'CUP'};
     if(qEdit){
-      quickList.forEach(function(x){ if(x.id === qEdit){ x.name = data.name; x.money = data.money; x.items = data.items; } });
+      quickList.forEach(function(x){ if(x.id === qEdit){ x.name = data.name; x.money = data.money; x.items = data.items; x.cur = data.cur; } });
     } else {
       data.id = uid(); quickList.push(data);
     }
@@ -1944,14 +2018,18 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
   function saveMoney(){
     var raw = byId('mnAmt').value;
     if(raw === ''){ byId('mnAmt').focus(); return; }
-    baseMoney = whole(raw) - netTotal();
-    try { LS.setItem(BKEY, String(baseMoney)); } catch(e) {}
+    baseMoney = whole(raw) - netTotal() - debtAdj('CUP');
+    var uraw = byId('mnUsd').value;
+    usdMoney = (uraw === '' ? 0 : r2(uraw)) - usdNet() - debtAdj('USD');
+    try { LS.setItem(BKEY, String(baseMoney)); LS.setItem(UKEY, String(usdMoney)); } catch(e) {}
     refreshStats();
     toast('Dinero actualizado');
     showPanel('main');
   }
   byId('mnSave').addEventListener('click', saveMoney);
-  byId('mnAmt').addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); saveMoney(); } });
+  ['mnAmt','mnUsd'].forEach(function(id){
+    byId(id).addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); saveMoney(); } });
+  });
 
   /* ---------- Importar y exportar cuenta ---------- */
   function buildBackup(){
@@ -1961,7 +2039,7 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
       data: {
         ganancias: all, gastos: exps, rapidas: quickList, accesos: linkList, deudas: debts,
         pedidos: orders, pedidos_enabled: ordersEnabled,
-        dinero_base: baseMoney, perfil: profile, tema: theme, colores: custom, grafica: chartType
+        dinero_base: baseMoney, dinero_usd: usdMoney, perfil: profile, tema: theme, colores: custom, grafica: chartType
       }
     };
   }
@@ -2015,6 +2093,7 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
     var nOrders = sanitizeOrders(d.pedidos);
     var nOrdersEnabled = d.pedidos_enabled === true;
     var nBase = parseFloat(d.dinero_base); if(isNaN(nBase)) nBase = 0;
+    var nUsd = parseFloat(d.dinero_usd); if(isNaN(nUsd)) nUsd = 0;
     var nProf = null;
     if(isObj(d.perfil) && typeof d.perfil.name === 'string'){
       var ph = typeof d.perfil.photo === 'string' && d.perfil.photo.indexOf('data:image/') === 0 ? d.perfil.photo : '';
@@ -2022,7 +2101,7 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
     }
 
     
-    all = nAll; exps = nExp; quickList = nQuick; linkList = nLinks; baseMoney = nBase; profile = nProf;
+    all = nAll; exps = nExp; quickList = nQuick; linkList = nLinks; baseMoney = nBase; usdMoney = nUsd; profile = nProf;
     debts = nDebts; dOpen = null;
     orders = nOrders; ordersEnabled = nOrdersEnabled;
     editingId = null;
@@ -2045,7 +2124,8 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
       LS.setItem(QKEY, JSON.stringify(quickList));
       LS.setItem(LKEY, JSON.stringify(linkList));
       LS.setItem(BKEY, String(baseMoney));
-      
+      LS.setItem(UKEY, String(usdMoney));
+
       LS.setItem(DKEY, JSON.stringify(debts));
       LS.setItem(OKEY, JSON.stringify(orders));
       LS.setItem(OENKEY, ordersEnabled ? '1' : '0');
@@ -2107,26 +2187,27 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
   function exportExcel(){
     save();
     var rows = buildRows(), net = 0, gan = 0, gas = 0, obj = 0;
-    var sum = [['Fecha', 'Ganado ($)', 'Gastado ($)', 'Neto ($)', 'Objetos']];
+    var sum = [['Fecha', 'Ganado (CUP)', 'Gastado (CUP)', 'Neto (CUP)', 'Objetos']];
     rows.forEach(function(r){
       sum.push([r.date, Math.round(r.money + r.spent), Math.round(r.spent), Math.round(r.money), Math.round(r.items)]);
       gan += r.money + r.spent; gas += r.spent; net += r.money; obj += r.items;
     });
     var tot = ['Total', Math.round(gan), Math.round(gas), Math.round(net), Math.round(obj)]; tot.bold = true;
     sum.push(tot);
-    var cash = ['Dinero que tengo', Math.round(baseMoney + net)]; cash.bold = true;
-    sum.push([]); sum.push(cash);
+    var cash = ['Dinero que tengo (CUP)', Math.round(walletCup(net))]; cash.bold = true;
+    var cashUsd = ['Dinero que tengo (USD)', walletUsd(rows)]; cashUsd.bold = true;
+    sum.push([]); sum.push(cash); sum.push(cashUsd);
 
-    var gRows = [['Fecha', 'Descripción', 'Dinero ($)', 'Cantidad']];
+    var gRows = [['Fecha', 'Descripción', 'Dinero', 'Moneda', 'Cantidad']];
     Object.keys(all).sort().forEach(function(d){
       listFor(d).forEach(function(e){
         if(isBlank(e)) return;
-        gRows.push([d, parseTag(e.name).text || '', Math.round(num(e.money)), Math.round(num(e.items))]);
+        gRows.push([d, parseTag(e.name).text || '', r2(e.money), curOf(e), Math.round(num(e.items))]);
       });
     });
-    var eRows = [['Fecha', 'Descripción', 'Gastado ($)']];
+    var eRows = [['Fecha', 'Descripción', 'Gastado', 'Moneda']];
     Object.keys(exps).sort().forEach(function(d){
-      expList(d).forEach(function(x){ eRows.push([d, parseTag(x.name).text || '', Math.round(num(x.money))]); });
+      expList(d).forEach(function(x){ eRows.push([d, parseTag(x.name).text || '', r2(x.money), curOf(x)]); });
     });
 
     var dRows = [['Tipo', 'Persona', 'Nota', 'Moneda', 'Monto', 'Abonado', 'Pendiente', 'Fecha límite', 'Estado']];
@@ -2144,8 +2225,8 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
       {name:'xl/_rels/workbook.xml.rels', text: H + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="' + rel + '/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="' + rel + '/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="' + rel + '/worksheet" Target="worksheets/sheet3.xml"/><Relationship Id="rId4" Type="' + rel + '/styles" Target="styles.xml"/><Relationship Id="rId5" Type="' + rel + '/worksheet" Target="worksheets/sheet4.xml"/></Relationships>'},
       {name:'xl/styles.xml', text: H + '<styleSheet ' + ns + '><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>'},
       {name:'xl/worksheets/sheet1.xml', text: sheetXml(sum, [18, 14, 14, 14, 11])},
-      {name:'xl/worksheets/sheet2.xml', text: sheetXml(gRows, [14, 34, 14, 12])},
-      {name:'xl/worksheets/sheet3.xml', text: sheetXml(eRows, [14, 34, 14])},
+      {name:'xl/worksheets/sheet2.xml', text: sheetXml(gRows, [14, 34, 14, 9, 12])},
+      {name:'xl/worksheets/sheet3.xml', text: sheetXml(eRows, [14, 34, 14, 9])},
       {name:'xl/worksheets/sheet4.xml', text: sheetXml(dRows, [12, 22, 30, 9, 12, 12, 12, 14, 12])}
     ]);
     deliverBlob(blob, 'finapp-' + todayStr() + '.xlsx');
@@ -2303,7 +2384,7 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
     if(name === 'cloud') loadCloudPanel();
     if(name === 'colors') syncColorUi();
     if(name === 'chart') syncChartUi();
-    if(name === 'money') byId('mnAmt').value = Math.round(baseMoney + netTotal());
+    if(name === 'money'){ var wu0 = walletUsd(); byId('mnAmt').value = Math.round(walletCup(netTotal())); byId('mnUsd').value = wu0 ? wu0 : ''; }
     document.querySelector('.sheet').scrollTop = 0;
   }
   byId('setBack').addEventListener('click', function(){ showPanel(PARENT[curPanel] || 'main'); });
@@ -2332,6 +2413,7 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
         amount: r2(d.amount), cur: CURS.indexOf(d.cur) >= 0 ? d.cur : 'CUP',
         date: String(d.date || '').slice(0, 10),
         due: /^\d{4}-\d{2}-\d{2}$/.test(String(d.due || '')) ? String(d.due) : '',
+        fx: d.fx === true,
         pays: pays
       };
     }).filter(function(d){ return d.amount > 0 && d.person; });
@@ -2376,8 +2458,8 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
     d.pays.push({id: uid(), amount: a, date: todayStr()});
     saveDebts();
     if(isPaid(d)) dOpen = null;
-    renderDebts();
-    toast(isPaid(d) ? 'Deuda pagada' : (capped ? 'Abono ajustado al saldo' : 'Abono agregado'));
+    renderDebts(); refreshStats();
+    toast(isPaid(d) ? (d.kind === 'owed' ? 'Cobrada: sumada a tu dinero' : 'Deuda pagada') : (capped ? 'Abono ajustado al saldo' : 'Abono agregado'));
   }
 
   function debtCard(d, paid, left, clr){
@@ -2403,13 +2485,13 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
       var inp = document.createElement('input');
       inp.type = 'number'; inp.inputMode = 'decimal'; inp.min = '0'; inp.step = 'any'; inp.placeholder = '0';
       w.appendChild(inp);
-      var add = mk('button', 'btn-done', 'Abonar'); add.type = 'button';
+      var add = mk('button', 'btn-done', d.kind === 'owed' ? 'Me pagaron' : 'Abonar'); add.type = 'button';
       var go = function(){ addPay(d, inp.value); };
       add.addEventListener('click', go);
       inp.addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); go(); } });
       g.appendChild(w); g.appendChild(add);
       card.appendChild(g);
-      var payAll = mk('button', 'chip', 'Pagar todo · ' + fmtAmt(left, d.cur)); payAll.type = 'button';
+      var payAll = mk('button', 'chip', (d.kind === 'owed' ? 'Me pagaron todo · ' : 'Pagar todo · ') + fmtAmt(left, d.cur)); payAll.type = 'button';
       payAll.style.marginTop = '10px';
       payAll.addEventListener('click', function(){ addPay(d, left); });
       card.appendChild(payAll);
@@ -2424,7 +2506,7 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
         x.addEventListener('click', function(){
           pushUndo('Abono eliminado');
           d.pays = d.pays.filter(function(y){ return y.id !== p.id; });
-          saveDebts(); renderDebts();
+          saveDebts(); renderDebts(); refreshStats();
         });
         row.appendChild(x);
         pl.appendChild(row);
@@ -2438,7 +2520,7 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
       pushUndo('Deuda eliminada');
       debts = debts.filter(function(x){ return x.id !== d.id; });
       dOpen = null;
-      saveDebts(); renderDebts();
+      saveDebts(); renderDebts(); refreshStats();
     });
     var close = mk('button', 'btn-done', 'Cerrar'); close.type = 'button';
     close.addEventListener('click', function(){ dOpen = null; renderDebts(); });
@@ -2524,11 +2606,11 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
     if(amount <= 0){ byId('dAmt').focus(); toast('Escribe el monto'); return; }
     var cur = byId('dCur').value;
     debts.push({id: uid(), kind: dFormK, person: person, note: byId('dNote').value.trim(), amount: amount,
-      cur: CURS.indexOf(cur) >= 0 ? cur : 'CUP', date: todayStr(), due: byId('dDue').value || '', pays: []});
+      cur: cur === 'USD' ? 'USD' : 'CUP', date: todayStr(), due: byId('dDue').value || '', fx: true, pays: []});
     dLastCur = cur;
     dKind = dFormK;
     closeDebtForm();
-    saveDebts(); renderDebts();
+    saveDebts(); renderDebts(); refreshStats();
     toast('Deuda agregada');
   }
   byId('dNew').addEventListener('click', openDebtForm);
@@ -2662,6 +2744,9 @@ create policy "own delete" on public.finapp_backups for delete using (auth.uid()
     var _tc = JSON.parse(LS.getItem(TKEY));
     if(isObj(_tc)){ tcfg.on = !!_tc.on; tcfg.token = String(_tc.token || '').trim(); }
   } catch(e) {}
+  // Token de elTOQUE incluido por defecto: si no hay uno guardado, se usa este y el modo online arranca encendido.
+  var DEFAULT_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc5Mjc2MjAwNiwianRpIjoiMDQzZjEzZWItMjg0YS00ODEzLWJlOTEtMDI4NDYxZmJmMjk3IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjZhZGE4NWQxM2FmMDQ2NDU0NzU3OGFkNCIsIm5iZiI6MTc5Mjc2MjAwNiwiY3NyZiI6ImJlNTNjNTRhLWMzZjEtNGI3MS1iMDcyLTJhMjhlMTkwYjAyYiJ9.sYwNIK_E_liNmXrN5OLPjbOqRXzBHWTr2ghf3bUj7-o';
+  if(DEFAULT_TOKEN && !tcfg.token){ tcfg.token = DEFAULT_TOKEN; tcfg.on = true; try { LS.setItem(TKEY, JSON.stringify(tcfg)); } catch(e) {} }
   try {
     var _rc = JSON.parse(LS.getItem(RKEY));
     if(isObj(_rc) && isObj(_rc.rates) && num(_rc.at) > 0) rcache = {at: num(_rc.at), rates: _rc.rates};
