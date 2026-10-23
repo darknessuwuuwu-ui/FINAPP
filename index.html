@@ -548,7 +548,8 @@
       <button class="set-item" data-go="chart" type="button"><span>Tipo de gráfica</span><small id="valChart"></small><b>›</b></button>
       <button class="set-item" data-go="colors" type="button"><span>Editor de colores</span><small id="valCustom"></small><b>›</b></button>
       <button class="set-item" data-go="quick" type="button"><span>Opción rápida</span><small id="valQuick"></small><b>›</b></button>
-      
+      <button class="set-item" data-go="links" type="button"><span>Accesos directos</span><small id="valLinks"></small><b>›</b></button>
+      <button class="set-item" data-go="cloud" type="button"><span>Nube · Supabase</span><small id="valCloud"></small><b>›</b></button>
     </div>
 
     <div class="panel" id="pnlAccount" hidden>
@@ -567,7 +568,7 @@
 
       <hr class="sep" style="margin:18px 0 14px">
       <div class="set-name">Importar y exportar</div>
-      <div class="sub" style="margin-bottom:6px">Exporta tu cuenta a un archivo que guarda toda la información: ganancias, gastos, dinero que tienes, perfil con foto, opciones rápidas, deudas y tema. También puedes sacar una hoja de <b>Excel</b> con tus ganancias y gastos.</div>
+      <div class="sub" style="margin-bottom:6px">Exporta tu cuenta a un archivo que guarda toda la información: ganancias, gastos, dinero que tienes, perfil con foto, opciones rápidas, deudas, accesos directos y tema. También puedes sacar una hoja de <b>Excel</b> con tus ganancias y gastos.</div>
       <button class="btn-wide pri" id="bkExport" type="button">Exportar cuenta</button>
       <button class="btn-wide sec" id="bkExcel" type="button">Exportar a Excel</button>
       <button class="btn-wide sec" id="bkImport" type="button">Importar cuenta</button>
@@ -640,6 +641,69 @@
     </div>
     </div>
 
+    <div class="panel" id="pnlLinks" hidden>
+      <div class="sub" style="margin-bottom:10px">Guarda páginas web para abrirlas con un toque.</div>
+      <div id="lList"></div>
+      <div id="lForm">
+        <input type="text" id="lName" placeholder="Nombre (opcional)">
+        <input type="url" id="lUrl" inputmode="url" autocapitalize="off" autocomplete="off" placeholder="https://ejemplo.com" style="margin-top:10px">
+        <div class="form-actions" style="justify-content:flex-end;gap:10px">
+          <button class="btn-del" id="lCancel" type="button" hidden>Cancelar</button>
+          <button class="btn-done" id="lSave" type="button">Agregar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="pnlCloud" hidden>
+      <div class="sub" style="margin-bottom:12px">Guarda una copia de toda tu cuenta en tu proyecto de Supabase y recupérala en otro teléfono. Cada usuario solo puede ver sus propios datos.</div>
+      <div id="sbCfgBox">
+      <label for="sbUrl">URL del proyecto</label>
+      <input type="url" id="sbUrl" inputmode="url" autocapitalize="off" autocomplete="off" placeholder="https://xxxx.supabase.co">
+      <label for="sbKey" style="margin-top:10px">Clave anon (public)</label>
+      <input type="password" id="sbKey" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="eyJ...">
+      <button class="btn-wide sec" id="sbCfgSave" type="button">Guardar conexión</button>
+      </div>
+
+      <div id="sbAuthBox" hidden>
+        <hr class="sep" style="margin:18px 0 14px">
+        <label for="sbEmail">Correo</label>
+        <input type="email" id="sbEmail" autocomplete="email" autocapitalize="off" placeholder="tucorreo@ejemplo.com">
+        <label for="sbPass" style="margin-top:10px">Contraseña (mínimo 6)</label>
+        <input type="password" id="sbPass" autocomplete="current-password" placeholder="••••••">
+        <button class="btn-wide pri" id="sbLogin" type="button">Entrar</button>
+        <button class="btn-wide sec" id="sbSignup" type="button">Crear cuenta</button>
+      </div>
+
+      <div id="sbSessBox" hidden>
+        <hr class="sep" style="margin:18px 0 14px">
+        <div class="set-name" id="sbWho"></div>
+        <button class="btn-wide pri" id="sbUp" type="button">Subir a la nube</button>
+        <button class="btn-wide sec" id="sbDown" type="button">Descargar de la nube</button>
+        <div class="seg" id="sbAutoSeg" style="margin-top:14px">
+          <button type="button" data-a="0">Subida manual</button>
+          <button type="button" data-a="1">Subir al salir</button>
+        </div>
+        <button class="btn-del" id="sbOut" type="button" style="margin-top:10px">Cerrar sesión</button>
+      </div>
+
+      <div class="onmsg" id="sbMsg"></div>
+
+      <hr class="sep" style="margin:18px 0 14px">
+      <div class="set-name">Preparar Supabase (una sola vez)</div>
+      <div class="sub" style="font-size:.78rem;margin-bottom:8px">En Supabase abre <b>SQL Editor</b>, pega esto y toca Run. La clave anon está en Project Settings → API. Nunca uses la clave <b>service_role</b> aquí.</div>
+      <div class="rgb-code" id="sbSql" style="white-space:pre-wrap;font-size:.7rem">create table if not exists public.finapp_backups (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  data jsonb not null,
+  updated_at timestamptz not null default now()
+);
+alter table public.finapp_backups enable row level security;
+create policy "own select" on public.finapp_backups for select using (auth.uid() = user_id);
+create policy "own insert" on public.finapp_backups for insert with check (auth.uid() = user_id);
+create policy "own update" on public.finapp_backups for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+create policy "own delete" on public.finapp_backups for delete using (auth.uid() = user_id);</div>
+      <button class="btn-wide sec" id="sbCopySql" type="button">Copiar SQL</button>
+    </div>
+
     <div class="panel" id="pnlQuick" hidden>
     <div class="sub" style="margin-bottom:10px">Crea botones que agregan una ganancia al día con un solo toque.</div>
     <div id="qList"></div>
@@ -682,7 +746,7 @@
       <button class="g-item" data-gg="online" type="button"><span>Tasas y modo online<em class="gd">Cambio de la moneda cubana (elTOQUE)</em></span><b>›</b></button>
       <button class="g-item" data-gg="expenses" type="button"><span>Gastos<em class="gd">Anota lo que gastas</em></span><b>›</b></button>
       <button class="g-item" data-gg="money" type="button"><span>Dinero que tengo<em class="gd">Tu saldo, siempre al día</em></span><b>›</b></button>
-      <button class="g-item" data-gg="quick" type="button"><span>Opción rápida<em class="gd">Agrega una ganancia con un toque</em></span><b>›</b></button>
+      <button class="g-item" data-gg="quick" type="button"><span>Opción rápida y accesos<em class="gd">Atajos para ahorrar toques</em></span><b>›</b></button>
       <button class="g-item" data-gg="more" type="button"><span>Buscar, deshacer y Excel<em class="gd">Funciones para ahorrar tiempo</em></span><b>›</b></button>
       
       <button class="g-item" data-gg="account" type="button"><span>Cuenta y copia de seguridad<em class="gd">Foto, nombre, importar y exportar</em></span><b>›</b></button>
@@ -727,7 +791,7 @@
 
     <div class="panel" id="gpQuick" hidden>
       <p class="gp"><b>Opción rápida:</b> en Ajustes creas botones que agregan una ganancia al día con un solo toque.</p>
-      
+      <p class="gp"><b>Accesos directos:</b> guarda páginas web en Ajustes para abrirlas con un toque.</p>
     </div>
 
     <div class="panel" id="gpMore" hidden>
@@ -1642,6 +1706,86 @@
   byId('qCancel').addEventListener('click', qReset);
   renderQuick();
 
+  /* ---------- Accesos directos ---------- */
+  var LKEY = 'accesos_v1', linkList = [], lEdit = null;
+  try { linkList = JSON.parse(LS.getItem(LKEY)) || []; } catch(e) { linkList = []; }
+  function saveLinks(){ try { LS.setItem(LKEY, JSON.stringify(linkList)); } catch(e) {} }
+
+  function fixUrl(u){
+    u = u.trim();
+    if(!u) return '';
+    if(!/^[a-z][a-z0-9+.-]*:/i.test(u)) u = 'https://' + u;
+    try {
+      var x = new URL(u);
+      return (x.protocol === 'http:' || x.protocol === 'https:') ? x.href : '';
+    } catch(e) { return ''; }
+  }
+  function hostOf(u){ try { return new URL(u).hostname.replace(/^www\./, ''); } catch(e) { return u; } }
+
+  function lReset(){
+    lEdit = null;
+    byId('lName').value = ''; byId('lUrl').value = '';
+    byId('lSave').textContent = 'Agregar';
+    byId('lCancel').hidden = true;
+  }
+
+  function renderLinks(){
+    var list = byId('lList');
+    list.innerHTML = '';
+    byId('valLinks').textContent = linkList.length ? linkList.length : 'Ninguno';
+    if(!linkList.length){
+      var box = document.createElement('div'); box.className = 'empty';
+      box.textContent = 'Aún no tienes accesos directos.';
+      list.appendChild(box);
+      return;
+    }
+    linkList.forEach(function(l){
+      var row = document.createElement('div'); row.className = 'ent';
+      var a = document.createElement('a');
+      a.className = 'ent-main lnk'; a.href = l.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      var st = document.createElement('strong'); st.textContent = l.name || hostOf(l.url);
+      var sm = document.createElement('small'); sm.textContent = hostOf(l.url);
+      a.appendChild(st); a.appendChild(sm);
+      var btns = document.createElement('div'); btns.className = 'qbtns';
+      var ed = document.createElement('button'); ed.type = 'button'; ed.className = 'chip'; ed.textContent = 'Editar';
+      ed.addEventListener('click', function(){
+        lEdit = l.id;
+        byId('lName').value = l.name || ''; byId('lUrl').value = l.url;
+        byId('lSave').textContent = 'Guardar';
+        byId('lCancel').hidden = false;
+        byId('lName').focus();
+      });
+      var del = document.createElement('button'); del.type = 'button'; del.className = 'btn-del'; del.textContent = 'Eliminar';
+      del.addEventListener('click', function(){
+        pushUndo('Acceso eliminado');
+        linkList = linkList.filter(function(x){ return x.id !== l.id; });
+        if(lEdit === l.id) lReset();
+        saveLinks(); renderLinks();
+      });
+      btns.appendChild(ed); btns.appendChild(del);
+      row.appendChild(a); row.appendChild(btns);
+      list.appendChild(row);
+    });
+  }
+
+  function saveLink(){
+    var url = fixUrl(byId('lUrl').value);
+    if(!url){ byId('lUrl').focus(); toast('Escribe una dirección web válida'); return; }
+    var name = byId('lName').value.trim();
+    if(lEdit){
+      linkList.forEach(function(x){ if(x.id === lEdit){ x.name = name; x.url = url; } });
+    } else {
+      linkList.push({id: uid(), name: name, url: url});
+    }
+    lReset(); saveLinks(); renderLinks();
+  }
+  byId('lSave').addEventListener('click', saveLink);
+  byId('lCancel').addEventListener('click', lReset);
+  ['lName','lUrl'].forEach(function(id){
+    byId(id).addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); saveLink(); } });
+  });
+  renderLinks();
+
   
   /* ---------- Cuenta y foto de perfil ---------- */
   var PKEY = 'perfil_v1', profile = null, draftPhoto = '';
@@ -1747,7 +1891,7 @@
     return {
       app: 'mis-ganancias', version: 1, exported: new Date().toISOString(),
       data: {
-        ganancias: all, gastos: exps, rapidas: quickList,  deudas: debts,
+        ganancias: all, gastos: exps, rapidas: quickList, accesos: linkList, deudas: debts,
         dinero_base: baseMoney, perfil: profile, tema: theme, colores: custom, grafica: chartType
       }
     };
@@ -1792,6 +1936,12 @@
     Object.keys(nExp).forEach(function(k){ if(!Array.isArray(nExp[k])) delete nExp[k]; });
     var nQuick = Array.isArray(d.rapidas) ? d.rapidas.filter(isObj) : [];
     
+    var nLinks = [];
+    (Array.isArray(d.accesos) ? d.accesos : []).forEach(function(l){
+      if(!isObj(l)) return;
+      var u = fixUrl(String(l.url || ''));
+      if(u) nLinks.push({id: l.id || uid(), name: String(l.name || ''), url: u});
+    });
     var nDebts = sanitizeDebts(d.deudas);
     var nBase = parseFloat(d.dinero_base); if(isNaN(nBase)) nBase = 0;
     var nProf = null;
@@ -1801,7 +1951,7 @@
     }
 
     
-    all = nAll; exps = nExp; quickList = nQuick; baseMoney = nBase; profile = nProf;
+    all = nAll; exps = nExp; quickList = nQuick; linkList = nLinks; baseMoney = nBase; profile = nProf;
     debts = nDebts; dOpen = null;
     editingId = null;
     entries = all[currentDate] || [];
@@ -1821,7 +1971,7 @@
       LS.setItem(KEY, JSON.stringify(all));
       LS.setItem(EKEY, JSON.stringify(exps));
       LS.setItem(QKEY, JSON.stringify(quickList));
-      
+      LS.setItem(LKEY, JSON.stringify(linkList));
       LS.setItem(BKEY, String(baseMoney));
       
       LS.setItem(DKEY, JSON.stringify(debts));
@@ -1830,7 +1980,7 @@
     } catch(e) { toast('No se pudo guardar todo en el dispositivo'); }
 
     applyTheme(theme);
-    renderQuick(); renderProfile(); renderAll(); 
+    renderQuick(); renderLinks(); renderProfile(); renderAll(); 
   }
 
   /* ---------- Exportar a Excel (.xlsx) ---------- */
@@ -1931,7 +2081,7 @@
   var undoSnap = null, undoT;
   function pushUndo(msg){
     all[currentDate] = entries;
-    undoSnap = JSON.stringify({all: all, exps: exps, quick: quickList, debts: debts});
+    undoSnap = JSON.stringify({all: all, exps: exps, quick: quickList, links: linkList, debts: debts});
     byId('undoMsg').textContent = msg;
     byId('undoBar').hidden = false;
     clearTimeout(undoT);
@@ -1942,7 +2092,7 @@
     if(!undoSnap) return hideUndo();
     var snap;
     try { snap = JSON.parse(undoSnap); } catch(e) { return hideUndo(); }
-    all = snap.all || {}; exps = snap.exps || {}; quickList = snap.quick || []; 
+    all = snap.all || {}; exps = snap.exps || {}; quickList = snap.quick || []; linkList = snap.links || [];
     if(snap.debts) debts = sanitizeDebts(snap.debts);
     dOpen = null;
     editingId = null;
@@ -1951,12 +2101,12 @@
       LS.setItem(KEY, JSON.stringify(all));
       LS.setItem(EKEY, JSON.stringify(exps));
       LS.setItem(QKEY, JSON.stringify(quickList));
-      
+      LS.setItem(LKEY, JSON.stringify(linkList));
     } catch(e) {}
     saveDebts();
     
     undoSnap = null; hideUndo();
-    renderQuick(); renderAll(); 
+    renderQuick(); renderLinks(); renderAll(); 
     toast('Restaurado');
   });
 
@@ -2025,7 +2175,7 @@
   
   var $guide = byId('guide');
   var GPANELS = {main:'gpMain', home:'gpHome', charts:'gpCharts', debts:'gpDebts', online:'gpOnline', expenses:'gpExpenses', money:'gpMoney', quick:'gpQuick', more:'gpMore', account:'gpAccount'};
-  var GTITLES = {main:'Guía', home:'Inicio y Historial', charts:'Tipos de gráfica', debts:'Deudas', online:'Tasas y modo online', expenses:'Gastos', money:'Dinero que tengo', quick:'Opción rápida', more:'Buscar, deshacer y Excel', account:'Cuenta y copia de seguridad'};
+  var GTITLES = {main:'Guía', home:'Inicio y Historial', charts:'Tipos de gráfica', debts:'Deudas', online:'Tasas y modo online', expenses:'Gastos', money:'Dinero que tengo', quick:'Opción rápida y accesos', more:'Buscar, deshacer y Excel', account:'Cuenta y copia de seguridad'};
   function showGuide(name){
     Object.keys(GPANELS).forEach(function(k){ byId(GPANELS[k]).hidden = k !== name; });
     byId('gTitle').textContent = GTITLES[name];
@@ -2063,18 +2213,19 @@
   syncChartUi();
 
   /* ---------- Apartados de Ajustes ---------- */
-  var PANELS = {main:'pnlMain', account:'pnlAccount', money:'pnlMoney', colors:'pnlColors', theme:'pnlTheme', chart:'pnlChart', quick:'pnlQuick', online:'pnlOnline'};
+  var PANELS = {main:'pnlMain', account:'pnlAccount', money:'pnlMoney', colors:'pnlColors', theme:'pnlTheme', chart:'pnlChart', quick:'pnlQuick', links:'pnlLinks', cloud:'pnlCloud', online:'pnlOnline'};
   var PARENT = {}, curPanel = 'main';
-  var PTITLES = {main:'Configuración', account:'Cuenta', money:'Dinero que tengo', colors:'Editor de colores', theme:'Tema', chart:'Tipo de gráfica', quick:'Opción rápida', online:'Modo online'};
+  var PTITLES = {main:'Configuración', account:'Cuenta', money:'Dinero que tengo', colors:'Editor de colores', theme:'Tema', chart:'Tipo de gráfica', quick:'Opción rápida', links:'Accesos directos', cloud:'Nube · Supabase', online:'Modo online'};
   function showPanel(name){
     Object.keys(PANELS).forEach(function(k){ byId(PANELS[k]).hidden = k !== name; });
     curPanel = name;
     byId('setTitle').textContent = PTITLES[name];
     byId('setBack').hidden = name === 'main';
-    qReset(); 
+    qReset(); lReset();
     if(name === 'account') loadAccountPanel();
     
     if(name === 'online') loadOnlinePanel();
+    if(name === 'cloud') loadCloudPanel();
     if(name === 'colors') syncColorUi();
     if(name === 'chart') syncChartUi();
     if(name === 'money') byId('mnAmt').value = Math.round(baseMoney + netTotal());
@@ -2492,6 +2643,151 @@
   }
   byId('onSave').addEventListener('click', saveOnline);
   byId('onToken').addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); saveOnline(); } });
+
+  /* ---------- Nube (Supabase) ---------- */
+  // Pega aquí los datos de tu proyecto Supabase para que la app ya venga conectada.
+  var SB_URL = 'https://etpkuudzvafevmpripfg.supabase.co', SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0cGt1dWR6dmFmZXZtcHJpcGZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3MTE4MTksImV4cCI6MjEwODI4NzgxOX0.ioFUDHqOOwy9u3xZA16MwU6rXOMoYG3hlSSAyHJtdlk';
+  var SBKEY = 'supabase_v1', sb = {url: '', key: '', auth: null, auto: false, linked: false}, sbBusy = false;
+  try {
+    var _sb = JSON.parse(LS.getItem(SBKEY));
+    if(isObj(_sb)){
+      sb.url = String(_sb.url || ''); sb.key = String(_sb.key || ''); sb.auto = !!_sb.auto; sb.linked = !!_sb.linked;
+      if(isObj(_sb.auth) && _sb.auth.access_token && _sb.auth.uid) sb.auth = _sb.auth;
+    }
+  } catch(e) {}
+  if(SB_URL && SB_KEY){ SB_URL = SB_URL.replace(/\/+$/, ''); if(sb.url !== SB_URL || sb.key !== SB_KEY){ sb.auth = null; sb.linked = false; } sb.url = SB_URL; sb.key = SB_KEY; }
+  function saveSb(){ try { LS.setItem(SBKEY, JSON.stringify(sb)); } catch(e) {} }
+  function sbBase(){ return sb.url.replace(/\/+$/, ''); }
+  function sbReady(){ return /^https:\/\/[^\s/]+/i.test(sb.url) && sb.key.length > 20; }
+  function sbMsg(text, cls){
+    var m = byId('sbMsg'); if(!m) return;
+    m.className = 'onmsg' + (cls ? ' ' + cls : ''); m.textContent = text || '';
+  }
+  function sbErr(e){
+    var s = e && e.status, m = String((e && e.message) || '');
+    if(s === 404 || /PGRST20[0-9]|schema cache|does not exist/i.test(m)) return 'Falta crear la tabla en Supabase. Ejecuta el SQL de abajo.';
+    if(/invalid login|invalid_credentials/i.test(m)) return 'Correo o contraseña incorrectos.';
+    if(/already registered|already been registered/i.test(m)) return 'Ese correo ya tiene cuenta. Toca Entrar.';
+    if(/email not confirmed/i.test(m)) return 'Confirma tu correo (te llegó un mensaje) y vuelve a entrar.';
+    if(/rate limit/i.test(m) || s === 429) return 'Demasiados intentos. Espera un momento.';
+    if(s === 401 || s === 403) return 'Sin permiso: revisa la clave anon y que corriste el SQL.';
+    if(e && e.name === 'TypeError') return 'No se pudo conectar. Revisa tu internet y la URL del proyecto.';
+    return m || 'Ocurrió un error.';
+  }
+  function sbReq(path, o){
+    o = o || {};
+    var h = {'apikey': sb.key, 'Content-Type': 'application/json'};
+    h['Authorization'] = 'Bearer ' + ((o.anon || !sb.auth) ? sb.key : sb.auth.access_token);
+    if(o.headers) Object.keys(o.headers).forEach(function(k){ h[k] = o.headers[k]; });
+    return fetch(sbBase() + path, {method: o.method || 'GET', headers: h, body: o.body ? JSON.stringify(o.body) : undefined}).then(function(r){
+      return r.text().then(function(tx){
+        var j = null; try { j = tx ? JSON.parse(tx) : null; } catch(e) {}
+        if(!r.ok){
+          var er = new Error((j && (j.msg || j.message || j.error_description || j.error)) || ('HTTP ' + r.status));
+          er.status = r.status; throw er;
+        }
+        return j;
+      });
+    });
+  }
+  function sbSession(j){
+    if(!j || !j.access_token || !j.user) return false;
+    sb.auth = {access_token: j.access_token, refresh_token: j.refresh_token || '', exp: Date.now() + num(j.expires_in || 3600) * 1000, uid: j.user.id, email: j.user.email || ''};
+    saveSb(); return true;
+  }
+  function sbFresh(){
+    if(!sb.auth) return Promise.reject(new Error('Inicia sesión primero.'));
+    if(sb.auth.exp - Date.now() > 60000) return Promise.resolve();
+    return sbReq('/auth/v1/token?grant_type=refresh_token', {method: 'POST', anon: true, body: {refresh_token: sb.auth.refresh_token}}).then(function(j){
+      if(!sbSession(j)) throw new Error('Sesión vencida.');
+    }).catch(function(e){
+      if(e && (e.status === 400 || e.status === 401)){ sb.auth = null; saveSb(); loadCloudPanel(); throw new Error('Tu sesión venció. Entra de nuevo.'); }
+      throw e;
+    });
+  }
+  function sbUpload(){
+    return sbFresh().then(function(){
+      return sbReq('/rest/v1/finapp_backups?on_conflict=user_id', {method: 'POST', headers: {'Prefer': 'resolution=merge-duplicates,return=minimal'},
+        body: {user_id: sb.auth.uid, data: buildBackup(), updated_at: new Date().toISOString()}});
+    });
+  }
+  function sbDownload(){
+    return sbFresh().then(function(){
+      return sbReq('/rest/v1/finapp_backups?select=data,updated_at&user_id=eq.' + encodeURIComponent(sb.auth.uid));
+    });
+  }
+  function sbBusyOn(on){
+    sbBusy = on;
+    ['sbCfgSave','sbLogin','sbSignup','sbUp','sbDown'].forEach(function(id){ byId(id).disabled = on; });
+  }
+  function loadCloudPanel(){
+    byId('sbUrl').value = sb.url; byId('sbKey').value = sb.key;
+    var ready = sbReady(), inn = !!sb.auth;
+    byId('sbCfgBox').hidden = !!(SB_URL && SB_KEY);
+    byId('sbAuthBox').hidden = !ready || inn;
+    byId('sbSessBox').hidden = !ready || !inn;
+    if(inn) byId('sbWho').textContent = 'Sesión: ' + sb.auth.email;
+    Array.prototype.forEach.call(byId('sbAutoSeg').children, function(b){
+      b.classList.toggle('on', (b.getAttribute('data-a') === '1') === sb.auto);
+    });
+    byId('valCloud').textContent = inn ? 'Conectado' : (ready ? 'Sin sesión' : 'Sin configurar');
+    if(!sbBusy) sbMsg(inn && sb.linked ? 'Tus datos se guardan solo cuando tú los subes.' : '', '');
+  }
+  byId('sbCfgSave').addEventListener('click', function(){
+    var u = byId('sbUrl').value.trim().replace(/\/+$/, ''), k = byId('sbKey').value.trim();
+    if(!/^https:\/\/[^\s/]+\.[^\s/]+$/i.test(u)){ byId('sbUrl').focus(); sbMsg('Escribe la URL completa, ej. https://xxxx.supabase.co', 'err'); return; }
+    if(k.length < 20){ byId('sbKey').focus(); sbMsg('Pega tu clave anon (public).', 'err'); return; }
+    if(sb.url !== u || sb.key !== k){ sb.auth = null; sb.linked = false; }
+    sb.url = u; sb.key = k; saveSb(); loadCloudPanel(); sbMsg('Conexión guardada. Ahora entra o crea tu cuenta.', 'ok');
+  });
+  function sbAuthDo(signup){
+    var em = byId('sbEmail').value.trim(), pw = byId('sbPass').value;
+    if(!em || pw.length < 6){ sbMsg('Escribe tu correo y una contraseña de al menos 6 caracteres.', 'err'); return; }
+    sbBusyOn(true); sbMsg(signup ? 'Creando cuenta…' : 'Entrando…', '');
+    sbReq(signup ? '/auth/v1/signup' : '/auth/v1/token?grant_type=password', {method: 'POST', anon: true, body: {email: em, password: pw}}).then(function(j){
+      if(sbSession(j)){ byId('sbPass').value = ''; sbBusyOn(false); loadCloudPanel(); sbMsg('Listo. Ya puedes subir o descargar tus datos.', 'ok'); }
+      else { sbBusyOn(false); sbMsg('Cuenta creada. Confirma tu correo y luego toca Entrar.', 'ok'); }
+    }).catch(function(e){ sbBusyOn(false); sbMsg(sbErr(e), 'err'); });
+  }
+  byId('sbLogin').addEventListener('click', function(){ sbAuthDo(false); });
+  byId('sbSignup').addEventListener('click', function(){ sbAuthDo(true); });
+  byId('sbPass').addEventListener('keydown', function(ev){ if(ev.key === 'Enter'){ ev.preventDefault(); sbAuthDo(false); } });
+  byId('sbUp').addEventListener('click', function(){
+    sbBusyOn(true); sbMsg('Subiendo…', '');
+    sbUpload().then(function(){ sb.linked = true; saveSb(); sbBusyOn(false); sbMsg('Copia subida: ' + whenText(Date.now()), 'ok'); toast('Subido a la nube'); })
+      .catch(function(e){ sbBusyOn(false); sbMsg(sbErr(e), 'err'); });
+  });
+  byId('sbDown').addEventListener('click', function(){
+    sbBusyOn(true); sbMsg('Descargando…', '');
+    sbDownload().then(function(rows){
+      sbBusyOn(false);
+      if(!Array.isArray(rows) || !rows.length || !isObj(rows[0].data)){ sbMsg('Todavía no hay copia en la nube para esta cuenta.', 'err'); return; }
+      var when = rows[0].updated_at ? whenText(new Date(rows[0].updated_at).getTime()) : '';
+      if(!confirm('¿Descargar la copia' + (when ? ' del ' + when : '') + '? Se reemplazará toda la información de este teléfono.')){ sbMsg('', ''); return; }
+      try { applyBackup(rows[0].data); sb.linked = true; saveSb(); loadCloudPanel(); sbMsg('Datos descargados.', 'ok'); toast('Cuenta restaurada'); }
+      catch(e) { sbMsg('La copia de la nube no es válida.', 'err'); }
+    }).catch(function(e){ sbBusyOn(false); sbMsg(sbErr(e), 'err'); });
+  });
+  byId('sbOut').addEventListener('click', function(){
+    sb.auth = null; sb.linked = false; sb.auto = false; saveSb(); loadCloudPanel(); sbMsg('Sesión cerrada.', '');
+  });
+  Array.prototype.forEach.call(byId('sbAutoSeg').children, function(b){
+    b.addEventListener('click', function(){
+      sb.auto = b.getAttribute('data-a') === '1';
+      if(sb.auto && !sb.linked){ sb.auto = false; saveSb(); loadCloudPanel(); sbMsg('Primero sube o descarga una copia manualmente.', 'err'); return; }
+      saveSb(); loadCloudPanel();
+    });
+  });
+  byId('sbCopySql').addEventListener('click', function(){
+    var s = byId('sbSql').textContent;
+    try { navigator.clipboard.writeText(s).then(function(){ toast('SQL copiado'); }, function(){ toast('No se pudo copiar'); }); }
+    catch(e) { toast('No se pudo copiar'); }
+  });
+  // Subida automática al salir de la app (solo si ya hay una copia vinculada en este dispositivo)
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden && sb.auto && sb.linked && sb.auth && sbReady() && !sbBusy) sbUpload().catch(function(){});
+  });
+  (function(){ byId('valCloud').textContent = sb.auth ? 'Conectado' : (sbReady() ? 'Sin sesión' : 'Sin configurar'); })();
 
   /* ---------- Deslizar para cambiar de opción ---------- */
   var ORDER = ['today', 'history', 'expenses', 'debts', 'rates'];
